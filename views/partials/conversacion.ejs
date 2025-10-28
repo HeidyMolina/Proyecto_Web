@@ -1,0 +1,32 @@
+<% if (mensajes && mensajes.length) { %>
+  <% mensajes.forEach(m => { %>
+    <!-- Mensaje usuario -->
+    <div class="msg usuario animate__animated animate__fadeIn">
+      <strong><%= m.nombre %>:</strong> <%= m.mensaje %>
+      <div class="small text-muted"><%= new Date(m.fecha).toLocaleString() %></div>
+
+      <!-- Mostrar reacción que dejó el admin -->
+      <div class="reaccion-destacada" id="reaccion-destacada-<%= m.id %>">
+        <%= m.reaccion ? m.reaccion : '' %>
+      </div>
+    </div>
+
+    <!-- Respuesta admin -->
+    <% if (m.respuesta) { %>
+      <div class="msg admin animate__animated animate__fadeInUp">
+        <%= m.respuesta %>
+        <% if(m.imagen){ %>
+          <br><img src="<%= m.imagen %>" alt="img">
+        <% } %>
+        <div class="acciones">
+          <a href="javascript:editarRespuesta(<%= m.id %>)" class="text-primary">✏️ Editar</a>
+          <a href="javascript:eliminarRespuesta(<%= m.id %>)" class="text-danger">🗑 Eliminar</a>
+        </div>
+      </div>
+    <% } %>
+  <% }) %>
+
+  <button class="btn btn-outline-secondary mt-3" onclick="archivarConversacion()">📂 Archivar conversación</button>
+<% } else { %>
+  <p class="text-muted">No hay mensajes aún.</p>
+<% } %>

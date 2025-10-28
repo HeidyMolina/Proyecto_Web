@@ -1,0 +1,791 @@
+<% /* views/mensajes.ejs */ %>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    background: url('/images/boton_panel/mensajes.png') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Press Start 2P', cursive, monospace;
+    color: #fff;
+    animation: fadeInBody 1s ease;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 15px;
+    background: linear-gradient(135deg, #29f1f1, #2446dd);
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.6);
+    color: #fff;
+  }
+
+  .chat-wrap { display:flex; gap:16px; }
+  .sidebar {
+    width: 260px; min-width:260px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 16px; padding: 16px; box-shadow: 0 10px 25px rgba(0,0,0,.3);
+    height: fit-content; position: sticky; top: 16px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+  }
+  .sidebar a {
+    font-family: 'Press Start 2P';
+  }
+
+  .timeline { flex:1; }
+
+
+  .status-badge {
+    font-size: 0.6rem;
+    padding: 3px 6px;
+    border-radius: 10px;
+    background: #000;
+    color: #fff;
+    border: 1px solid #fff;
+  }
+
+  .react-btn {
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+  }
+  .react-btn:hover {
+    transform: scale(1.3) rotate(-10deg);
+  }
+
+  .fav {
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: gold;
+    text-shadow: 0 0 8px rgba(255,215,0,0.8);
+  }
+  .fav.off { color: #666; }
+
+  .send-card {
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #29f1f1;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 0 20px rgba(41,241,241,0.6);
+  }
+  .form-label {
+    color: #ffeb3b;
+    font-size: 0.7rem;
+  }
+  .btn-info {
+    background: linear-gradient(135deg, #ff00cc, #3333ff);
+    color: #fff;
+    border: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(255,0,204,0.7);
+  }
+  .btn-info:hover {
+    background: linear-gradient(135deg, #3333ff, #ff00cc);
+    transform: scale(1.05);
+  }
+
+  /* Animaciones */
+  .animacion-reaccion span {
+    position: absolute;
+    font-size: 1.5rem;
+    opacity: 0;
+    animation: flotar 1.2s ease forwards;
+  }
+  @keyframes flotar {
+    0% { transform: translateY(20px) scale(0.8); opacity: 0; }
+    30% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+    100% { transform: translateY(-60px) scale(0.8); opacity: 0; }
+  }
+
+  .vibrar { animation: vibrar .4s ease; }
+  @keyframes vibrar {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-3px); }
+    40% { transform: translateX(3px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+    100% { transform: translateX(0); }
+  }
+
+/* ===== ESTILO UNIFICADO TIPO BANDEJA DE MENSAJES ===== */
+.msg {
+  max-width: 680px;
+  border-radius: 20px;
+  padding: 14px 16px;
+  position: relative;
+  font-size: 0.8rem;
+  font-family: 'Press Start 2P', cursive, monospace;
+  animation: fadeInUp 0.6s ease;
+  border: 2px solid #fff;
+  box-shadow: 0 0 15px rgba(255,255,255,0.4);
+  margin-bottom: 1rem;
+  word-wrap: break-word;
+  overflow: hidden;
+}
+
+/* Usuario normal → igual a .mine */
+.msg.usuario {
+  margin-left: auto;
+  background: linear-gradient(135deg, #00f7ff, #3704af);
+  color: #fff;
+}
+
+/* Admin → igual a .admin */
+.msg.admin { 
+  background: #fff; 
+  color: #000; 
+}
+
+/* Estado */
+.status-badge {
+  font-size: 0.6rem;
+  padding: 3px 6px;
+  border-radius: 10px;
+  background: #000;
+  color: #fff;
+  border: 1px solid #fff;
+}
+
+/* Imagen dentro del mensaje */
+.msg img {
+  max-width: 200px;
+  border-radius: 12px;
+  margin-top: .4rem;
+  box-shadow: 0 6px 14px rgba(0,0,0,.15);
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.vibrar { animation: vibrar .4s ease; }
+@keyframes vibrar {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+/* Reacciones flotantes */
+.animacion-reaccion span {
+  position: absolute;
+  font-size: 1.5rem;
+  opacity: 0;
+  animation: flotar 1.2s ease forwards;
+}
+@keyframes flotar {
+  0% { transform: translateY(20px) scale(0.8); opacity: 0; }
+  30% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+  100% { transform: translateY(-60px) scale(0.8); opacity: 0; }
+}
+
+/* Emoji grande fijo */
+.reaccion-destacada {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 2.8rem;
+  opacity: 0.95;
+  pointer-events: none;
+  animation: pop 0.4s ease;
+}
+@keyframes pop {
+  0% { transform: scale(0.3); opacity: 0; }
+  70% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.95; }
+}
+
+/* Estilo retro como tu mini-juego */
+.swal2-popup{
+  font-family:'Press Start 2P', cursive, monospace;
+  border-radius:18px;
+  background:linear-gradient(135deg,#3b82f6,#9333ea);
+  color:#fff;
+  box-shadow:0 14px 30px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.25);
+}
+.swal2-title{ text-shadow:0 2px 0 rgba(0,0,0,.25); }
+.swal2-html-container{ color:#eaf2ff; opacity:.95; }
+.swal2-confirm, .swal2-cancel{
+  font-family:'Press Start 2P', cursive, monospace;
+  border-radius:12px !important;
+  box-shadow:0 6px 0 rgba(0,0,0,.25);
+}
+.swal2-confirm{ background:#22c55e !important; }
+.swal2-cancel{ background:#ef4444 !important; }
+
+.globo-dialogo {
+  max-width: 500px;
+  background: linear-gradient(135deg, #29f1f1, #2446dd);
+  color: #fff;
+  font-family: 'Press Start 2P', cursive, monospace;
+  font-size: 0.75rem;
+  padding: 20px;
+  border-radius: 20px;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  animation: pulse 2s infinite;
+  border: 3px solid #fff; /* 🟢 marco blanco estilo cómic */
+}
+
+</style>
+
+<!-- Bloque de saludo con Justito -->
+<div class="d-flex justify-content-center align-items-center gap-4 my-4 animate__animated animate__fadeIn">
+  <!-- Imagen del soldadito -->
+  <div class="soldado-saludo">
+    <img src="/images/saludo2.png" alt="Saludo Justito" class="img-fluid saludo-img">
+  </div>
+
+  <!-- Globo de diálogo -->
+  <div class="globo-dialogo">
+    <p>
+      Hola <strong><%= user.nombre %></strong>, ¡qué alegría recibir tu visita!😊<br>
+      Me encantaría conocer tu opinión sobre lo que viste aquí y poder resolver cualquier duda que tengas. <br>
+      Escríbeme un mensaje y con gusto te responderé lo más pronto posible. 🥰 
+    </p>
+  </div>
+</div>
+
+<style>
+/* Imagen del soldado más grande */
+.saludo-img {
+  max-width: 350px; /* tamaño aumentado */
+  filter: drop-shadow(0 0 15px rgba(0,0,0,0.5));
+  animation: bounceIn 1.5s ease;
+}
+
+/* Globo de diálogo más grande y letras negras */
+.globo-dialogo {
+  max-width: 600px;
+  background: #fff;
+  color: #000; /* texto negro */
+  font-family: 'Baloo 2', cursive; /* nueva fuente amigable */
+  font-size: 1.1rem; /* más grande */
+  line-height: 1.6;
+  padding: 25px;
+  border-radius: 25px;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  animation: pulse 2s infinite;
+}
+
+/* Triangulito del globo */
+.globo-dialogo::before {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 50px;
+  border-width: 12px;
+  border-style: solid;
+  border-color: transparent #fff transparent transparent;
+}
+
+/* Animaciones */
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 15px rgba(41,241,241,0.6); }
+  50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(36,70,221,0.8); }
+  100% { transform: scale(1); box-shadow: 0 0 15px rgba(41,241,241,0.6); }
+}
+</style>
+
+
+<div class="container my-4">
+  <h2>BANDEJA DE MENSAJES</h2>
+
+  <!-- Formulario de envío -->
+  <div class="send-card p-3 mb-4">
+    <form action="/mensajes" method="POST" id="formEnviar">
+      <div class="mb-2">
+        <label class="form-label">Escribe tu mensaje</label>
+        <textarea name="mensaje" class="form-control" rows="3" required></textarea>
+      </div>
+      <button class="btn btn-info w-100 fw-bold" id="btnEnviar">Enviar</button>
+    </form>
+  </div>
+
+  <div class="chat-wrap">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h6 class="mb-3">📂 Categorías</h6>
+      <div class="d-grid gap-2">
+        <a class="btn btn-outline-primary" href="/mensajes">Mis mensajes</a>
+        <a class="btn btn-outline-warning" href="/mensajes?f=favoritos">Favoritos ⭐</a>
+      </div>
+    </aside>
+
+    <!-- Timeline -->
+<section class="timeline w-100">
+  <% if (mensajes && mensajes.length) { %>
+    <% mensajes.forEach(m => { %>
+      <div class="mb-3">
+        <!-- burbuja -->
+        <div class="msg <%= m.enviado_por==='admin' ? 'admin' : 'usuario' %> animate__animated animate__fadeIn" id="msg-<%= m.id %>">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="me-2">
+             <div class="fw-bold" style="<%= m.enviado_por !== 'admin' ? 'color:#000;' : '' %>">
+  <%= m.enviado_por === 'admin' ? 'Justito' : (user.nombre + ' ' + user.apellido) %>
+</div>
+<div class="text-muted small"><%= new Date(m.fecha).toLocaleString() %></div>
+
+            </div>
+            <div>
+              <% if (m.enviado_por !== 'admin') { %>
+              <% if (m.estado === 'respondido') { %>
+              <span class="status-badge">Respondido ✅</span>
+              <% } else if (m.estado === 'leido') { %>
+              <span class="status-badge">Leído 👀</span>
+              <% } else { %>
+              <span class="status-badge">Enviado ⏳</span>
+              <% } %>
+              <% } %>
+
+            </div>
+          </div>
+
+          <p class="mt-2 mb-2" id="texto-<%= m.id %>"><%= m.mensaje %></p>
+
+          <% if (m.imagen) { %>
+            <img src="<%= m.imagen %>" alt="imagen" class="mt-2 img-fluid rounded shadow-sm"
+                 style="max-width:200px; cursor:pointer"
+                 onclick="verImagenGrande('<%= m.imagen %>')">
+          <% } %>
+
+          <!-- acciones SOLO para mensajes del usuario -->
+          <% if (m.enviado_por !== 'admin') { %>
+            <div class="d-flex align-items-center gap-3">
+              <button class="btn btn-sm btn-outline-primary" onclick="editarMensaje(<%= m.id %>)">Editar</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="eliminarMensaje(<%= m.id %>)">Eliminar</button>
+            </div>
+          <% } %>
+
+          <!-- reacciones SOLO para mensajes del admin -->
+          <% if (m.enviado_por==='admin') { %>
+            <div class="mt-2 d-flex align-items-center gap-2">
+              <span class="react-btn" onclick="handleReaction(<%= m.id %>, '👍')">👍</span>
+              <span class="react-btn" onclick="handleReaction(<%= m.id %>, '❤️')">❤️</span>
+              <span class="react-btn" onclick="handleReaction(<%= m.id %>, '😂')">😂</span>
+              <span class="react-btn" onclick="handleReaction(<%= m.id %>, '🎖️')">🎖️</span>
+
+                           <span class="fav <%= m.favorito ? '' : 'off' %>"
+                    onclick="toggleFav(<%= m.id %>, <%= m.favorito ? 0 : 1 %>)">★</span>
+            </div>
+          <% } %>
+
+          <!-- Contenedor de animación flotante -->
+          <div class="animacion-reaccion" id="animacion-<%= m.id %>"></div>
+
+          <!-- Contenedor fijo para reacción destacada -->
+          <div class="reaccion-destacada" id="reaccion-destacada-<%= m.id %>">
+  <%= m.reaccion ? m.reaccion : '' %>
+</div>
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p class="text-center">⚡ No tienes mensajes todavía</p>
+  <% } %>
+</section>
+
+  </div>
+</div>
+
+
+<audio id="snd" src="/audio/notify.mp3" preload="auto"></audio>
+<canvas class="confetti" id="confetti" style="display:none"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Enviar
+  const btnEnviar = document.getElementById('btnEnviar');
+  const formEnviar = document.getElementById('formEnviar');
+  btnEnviar?.addEventListener('click', () => {
+    btnEnviar.classList.add('animate__animated','animate__pulse');
+    setTimeout(() => btnEnviar.classList.remove('animate__animated','animate__pulse'), 900);
+  });
+  formEnviar?.addEventListener('submit', () => { lanzarConfetti(20); });
+
+  /* ✨ Editar / Eliminar (SweetAlert2) — reemplaza las versiones con prompt/confirm */
+async function editarMensaje(id){
+  const p = document.getElementById('texto-'+id);
+  const actual = (p?.textContent || '').trim();
+
+  const { value: nuevo, isConfirmed } = await Swal.fire({
+    title: 'Editar mensaje',
+    input: 'textarea',
+    inputValue: actual,
+    inputLabel: 'Nuevo texto',
+    inputPlaceholder: 'Escribe el mensaje…',
+    showCancelButton: true,
+    confirmButtonText: 'Guardar',
+    cancelButtonText: 'Cancelar',
+    showClass:{ popup:'animate__animated animate__zoomIn' },
+    hideClass:{ popup:'animate__animated animate__fadeOut faster' }
+  });
+
+  if (!isConfirmed || !nuevo?.trim()) return;
+
+  const res = await fetch(`/mensajes/${id}/editar`, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ mensaje: nuevo.trim() })
+  }).then(r=>r.json()).catch(()=>({ok:false}));
+
+  if (res.ok){
+    p.textContent = nuevo.trim();
+    Swal.fire({ title:'Guardado', icon:'success', timer:900, showConfirmButton:false });
+  } else {
+    Swal.fire({ title:'No se pudo editar', icon:'error' });
+  }
+}
+
+async function eliminarMensaje(id){
+  const { isConfirmed } = await Swal.fire({
+    title: '¿Eliminar este mensaje?',
+    text: 'Esta acción no se puede deshacer.',
+    iconHtml: '🗑️',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true,
+    backdrop: 'rgba(0,0,0,.5)',
+    showClass: { popup: 'animate__animated animate__zoomIn' },
+    hideClass: { popup: 'animate__animated animate__fadeOut faster' }
+  });
+  if (!isConfirmed) return;
+
+  const res = await fetch(`/mensajes/${id}/eliminar`, { method:'POST' })
+                 .then(r=>r.json()).catch(()=>({ok:false}));
+
+  if (res.ok){
+    const cont = document.getElementById('texto-'+id)?.closest('.mb-3');
+    if (cont){ cont.style.animation = 'fadeOut .3s both'; setTimeout(()=>cont.remove(), 300); }
+    Swal.fire({ title:'Eliminado', icon:'success', timer:900, showConfirmButton:false });
+  } else {
+    Swal.fire({ title:'No se pudo eliminar', icon:'error' });
+  }
+}
+
+
+  // Reacciones: guarda en BD y lanza la animación
+function handleReaction(id, emo) {
+  fetch(`/mensajes/${id}/reaccion`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reaccion: emo })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.ok) {
+      // ✅ Poner el emoji grande de forma permanente
+      const fixed = document.getElementById("reaccion-destacada-" + id);
+      if (fixed) {
+        fixed.textContent = emo;
+        fixed.style.animation = "none"; // reinicia animación
+        fixed.offsetHeight;
+        fixed.style.animation = "pop 0.4s ease";
+      }
+
+      // ✨ Animación flotante opcional
+      reaccionar(id, emo);
+    }
+  })
+  .catch(err => console.error("Error guardando reacción", err));
+}
+
+
+  // Favorito
+  function toggleFav(id, v){
+    fetch(`/mensajes/${id}/favorito`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ valor: String(v) })
+    }).then(()=> location.reload());
+  }
+
+  // Polling nuevas respuestas
+let lastCheck = Date.now();
+setInterval(()=>{
+  fetch(`/mensajes/check?desde=${lastCheck}`)
+    .then(r=>r.json())
+    .then(({n, now})=>{
+      if(n>0){
+        // 🔔 Notificación animada con Justito
+        notiJustito("¡Tienes un nuevo mensaje de Justito!");
+        // 🔊 Sonido opcional
+        document.getElementById('snd')?.play().catch(()=>{});
+      }
+      lastCheck = now || Date.now();
+    }).catch(()=>{});
+}, 8000);
+
+  // Confetti
+  function lanzarConfetti(cantidad){
+    const cv = document.getElementById('confetti');
+    const ctx = cv.getContext('2d');
+    const W = cv.width = window.innerWidth;
+    const H = cv.height = window.innerHeight;
+    cv.style.display = 'block';
+    const parts = Array.from({length: cantidad}).map(()=>({x: Math.random()*W, y: -10, s: 6+Math.random()*8, v: 2+Math.random()*3}));
+    let t = 0;
+    function step(){
+      ctx.clearRect(0,0,W,H);
+      ctx.save();
+      parts.forEach(p=>{ ctx.fillRect(p.x, p.y+=p.v, p.s, p.s); });
+      ctx.restore();
+      t++;
+      if(t<60) requestAnimationFrame(step); else cv.style.display='none';
+    }
+    step();
+  }
+
+  // Ver imagen en grande
+  function verImagenGrande(url) {
+    document.getElementById("imagenGrande").src = url;
+    document.getElementById("btnDescargarImagen").href = url;
+    const modal = new bootstrap.Modal(document.getElementById("modalImagen"));
+    modal.show();
+  }
+
+ 
+</script>
+
+<div class="d-flex justify-content-end mb-3">
+  <form id="formEliminarTodo" action="/mensajes/archivar-todo" method="POST">
+  <button class="btn btn-danger btn-sm">🗑️ Eliminar toda la conversación</button>
+</form>
+</div>
+
+<!-- Modal Imagen -->
+<div class="modal fade" id="modalImagen" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-dark text-center position-relative">
+      <img id="imagenGrande" src="" class="img-fluid rounded" style="max-height: 80vh; object-fit: contain;">
+      <div class="p-2">
+        <a id="btnDescargarImagen" href="#" download class="btn btn-success btn-sm">📥 Descargar</a>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">❌ Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+document.getElementById('formEliminarTodo')?.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const {isConfirmed} = await Swal.fire({
+    title: '¿Eliminar toda la conversación?',
+    text: 'Esta acción eliminará todos tus mensajes.',
+    iconHtml: '🗑️',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar todo',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true,
+    showClass:{ popup:'animate__animated animate__zoomIn' },
+    hideClass:{ popup:'animate__animated animate__fadeOut faster' }
+  });
+  if (isConfirmed) e.target.submit();
+});
+
+
+// 🌟 Mini Confetti Burst
+function miniConfettiBurst(targetId) {
+  const target = document.getElementById("msg-" + targetId);
+  if (!target) return;
+
+  const rect = target.getBoundingClientRect();
+  const confetti = document.createElement("canvas");
+  confetti.width = rect.width;
+  confetti.height = rect.height;
+  confetti.style.position = "absolute";
+  confetti.style.left = rect.left + "px";
+  confetti.style.top = rect.top + "px";
+  confetti.style.pointerEvents = "none";
+  confetti.style.zIndex = 3000;
+
+  document.body.appendChild(confetti);
+
+  const ctx = confetti.getContext("2d");
+  const pieces = Array.from({ length: 20 }).map(() => ({
+    x: Math.random() * rect.width,
+    y: Math.random() * rect.height / 2,
+    size: 4 + Math.random() * 6,
+    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+    vy: 2 + Math.random() * 3,
+    vx: -2 + Math.random() * 4
+  }));
+
+  let frames = 0;
+  function animate() {
+    ctx.clearRect(0, 0, confetti.width, confetti.height);
+    pieces.forEach(p => {
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.x, p.y, p.size, p.size);
+      p.x += p.vx;
+      p.y += p.vy;
+    });
+    frames++;
+    if (frames < 40) {
+      requestAnimationFrame(animate);
+    } else {
+      document.body.removeChild(confetti);
+    }
+  }
+  animate();
+}
+
+// ✨ Animaciones de reacción + confetti
+function reaccionar(id, tipo){
+  const msg = document.getElementById("msg-"+id);
+  const animBox = document.getElementById("animacion-"+id);
+
+  // vibración
+  msg.classList.add("vibrar");
+  setTimeout(()=> msg.classList.remove("vibrar"), 400);
+
+  // limpiar animación previa
+  animBox.innerHTML = "";
+
+  if(tipo === "❤️"){
+    for(let i=0; i<5; i++){
+      const span=document.createElement("span");
+      span.textContent="❤️";
+      span.style.left=`${Math.random()*80-40}px`;
+      animBox.appendChild(span);
+    }
+  }
+  else if(tipo === "👍"){
+    for(let i=0; i<4; i++){
+      const span=document.createElement("span");
+      span.textContent=i%2===0?"👍":"😊";
+      span.style.left=`${Math.random()*80-40}px`;
+      animBox.appendChild(span);
+    }
+  }
+  else if(tipo === "😂"){
+    for(let i=0; i<4; i++){
+      const span=document.createElement("span");
+      span.textContent=i%2===0?"😂":"Ja";
+      span.style.left=`${Math.random()*80-40}px`;
+      animBox.appendChild(span);
+    }
+  }
+  else if(tipo === "🎖️"){
+    for(let i=0; i<5; i++){
+      const span=document.createElement("span");
+      span.textContent="🏅";
+      span.style.left=`${Math.random()*80-40}px`;
+      animBox.appendChild(span);
+    }
+  }
+
+  // 🎊 Llamar al mini confetti
+  miniConfettiBurst(id);
+
+  // limpiar después de 2s
+  setTimeout(()=> animBox.innerHTML="", 2000);
+}
+</script>
+<script>
+async function eliminarRespuesta(id){
+  const { isConfirmed } = await Swal.fire({
+    title: '¿Eliminar esta respuesta?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: undefined,
+    iconHtml: '🗑️',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true,
+    backdrop: 'rgba(0,0,0,.5)',
+    showClass: { popup: 'animate__animated animate__zoomIn' },
+    hideClass: { popup: 'animate__animated animate__fadeOut faster' }
+  });
+
+  if (!isConfirmed) return;
+
+  const res = await fetch(`/admin/mensajes/eliminar/${id}`, { method: 'POST' })
+    .then(r => r.json()).catch(() => ({ ok:false }));
+
+  if (res.ok) {
+    await Swal.fire({
+      title: 'Eliminado',
+      icon: 'success',
+      timer: 1100,
+      showConfirmButton: false,
+      background: 'rgba(0,0,0,.85)',
+      color:'#fff',
+      showClass:{ popup:'animate__animated animate__fadeInUp' },
+      hideClass:{ popup:'animate__animated animate__fadeOutDown faster' }
+    });
+    abrirConversacion(usuarioActivo); // recarga la conversación
+  } else {
+    Swal.fire({
+      title: 'Ups',
+      text: 'No se pudo eliminar. Intenta de nuevo.',
+      icon: 'error',
+      confirmButtonText: 'Entendido',
+      showClass:{ popup:'animate__animated animate__shakeX' }
+    });
+  }
+}
+
+function notiJustito(msg){
+  Swal.fire({
+    title: '📩 Nuevo mensaje de Justito',
+    text: msg || '¡Tienes un nuevo mensaje!',
+    toast: true,
+    position: 'top',
+    showConfirmButton: false,
+    timer: 3500,
+    timerProgressBar: true,
+    background: '#3704af',
+    color: '#fff',
+    iconHtml: '🪖',
+    customClass:{
+      popup: 'animate__animated animate__fadeInDown'
+    }
+  });
+}
+
+</script>
+
+<script>
+async function editarRespuesta(id){
+  const { value: nuevo, isConfirmed } = await Swal.fire({
+    title: 'Editar respuesta',
+    input: 'textarea',
+    inputLabel: 'Nuevo texto',
+    inputPlaceholder: 'Escribe la respuesta…',
+    inputAttributes: { 'aria-label': 'Nuevo texto' },
+    showCancelButton: true,
+    confirmButtonText: 'Guardar',
+    cancelButtonText: 'Cancelar',
+    showClass:{ popup:'animate__animated animate__zoomIn' },
+    hideClass:{ popup:'animate__animated animate__fadeOut faster' }
+  });
+  if (!isConfirmed || !nuevo?.trim()) return;
+
+  const ok = await fetch(`/admin/mensajes/editar/${id}`,{
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ respuesta: nuevo.trim() })
+  }).then(r=>r.ok).catch(()=>false);
+
+  if (ok) {
+    Swal.fire({ title:'Guardado', icon:'success', timer:900, showConfirmButton:false });
+    abrirConversacion(usuarioActivo);
+  } else {
+    Swal.fire({ title:'Error', text:'No se pudo guardar', icon:'error' });
+  }
+}
+</script>

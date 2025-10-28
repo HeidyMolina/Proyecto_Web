@@ -1,0 +1,68 @@
+<% mensajes.forEach(m => { %>
+  <!-- MENSAJE -->
+  <div class="msg <%= m.enviado_por %> animate__animated animate__fadeIn" onclick="toggleAcciones(<%= m.id %>)">
+    <strong>
+      <% if (m.enviado_por === "admin") { %>
+  Justito
+      <% } else { %>
+      <%= m.nombre %> <%= m.apellido %>
+      <% } %>
+
+    </strong><br>
+
+    <%= m.mensaje %>
+
+    <% if (m.imagen) { %>
+      <img src="<%= m.imagen %>" alt="imagen" class="mt-2">
+    <% } %>
+
+    <small class="text-muted d-block"><%= new Date(m.fecha).toLocaleString() %></small>
+
+    <!-- Reacción fija -->
+    <div class="reaccion-destacada" id="reaccion-destacada-<%= m.id %>">
+      <%= m.reaccion ? m.reaccion : '' %>
+    </div>
+
+    <!-- Badge del estado (solo para mensajes de usuario) -->
+<% if (m.enviado_por === "usuario") { %>
+  <span class="badge <%= m.estado==='respondido' ? 'bg-success' : m.estado==='leido' ? 'bg-info text-dark' : 'bg-warning text-dark' %>">
+    <%= m.estado==='respondido' ? 'Respondido ✅' : m.estado==='leido' ? 'Leído 👀' : 'Pendiente ⏳' %>
+  </span>
+<% } %>
+
+
+    <!-- Botones de acciones -->
+    <div id="acciones-<%= m.id %>" class="acciones mt-2" style="display:none; flex-direction:column; align-items:flex-start;">
+      <% if (m.enviado_por === "usuario") { %>
+        <!-- Solo responder -->
+        <button class="btn btn-sm btn-primary mb-2" onclick="abrirRespuesta(<%= m.id %>); return false;">💬 Responder</button>
+      <% } else if (m.enviado_por === "admin") { %>
+        <!-- Admin puede responder, editar y eliminar -->
+        <button class="btn btn-sm btn-primary mb-2" onclick="abrirRespuesta(<%= m.id %>); return false;">💬 Responder</button>
+        <button class="btn btn-sm btn-warning mb-2" onclick="editarRespuesta(<%= m.id %>); return false;">✏️ Editar</button>
+        <button class="btn btn-sm btn-danger mb-2" onclick="eliminarRespuesta(<%= m.id %>); return false;">🗑️ Eliminar</button>
+      <% } %>
+    </div>
+
+    <!-- Formulario de respuesta oculto -->
+    <form id="form-resp-<%= m.id %>" class="form-respuesta d-none mt-2"
+          action="/admin/mensajes/responder/<%= m.id %>" method="POST" enctype="multipart/form-data">
+      <textarea name="respuesta" class="form-control mb-2" rows="2" placeholder="Escribe tu respuesta..." required></textarea>
+      <input type="file" name="imagen" class="form-control mb-2">
+      <div class="d-flex gap-2">
+        <button class="btn btn-success btn-sm">Enviar ✅</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="cancelarRespuesta(<%= m.id %>)">Cancelar ❌</button>
+      </div>
+    </form>
+
+    <% if (m.enviado_por === "usuario") { %>
+      <!-- Reacciones SOLO para mensajes de usuario -->
+      <div class="mt-2 d-flex align-items-center gap-2">
+        <span class="react-btn" onclick="handleReaction(<%= m.id %>, '👍')">👍</span>
+        <span class="react-btn" onclick="handleReaction(<%= m.id %>, '❤️')">❤️</span>
+        <span class="react-btn" onclick="handleReaction(<%= m.id %>, '😂')">😂</span>
+        <span class="react-btn" onclick="handleReaction(<%= m.id %>, '🎖️')">🎖️</span>
+      </div>
+    <% } %>
+  </div>
+<% }) %>

@@ -1,0 +1,144 @@
+<% /* views/admin.ejs */ %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+  body {
+    background-image: url('/images/fondo_verde.png');
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    font-family: Arial, sans-serif;
+  }
+
+  .admin-panel {
+    text-align: center;
+    padding-top: 80px;
+    padding-bottom: 60px;
+  }
+
+  .admin-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #1b2e1f;
+    text-shadow: 0 0 5px rgba(0,0,0,0.3);
+  }
+
+  /* Estilo de botones tipo tarjeta con imagen */
+  .admin-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 arriba */
+    gap: 30px;
+    justify-content: center;
+  }
+
+  .admin-button {
+    height: 160px;
+    border-radius: 25px;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s ease, filter 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .admin-button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4); /* oscurece la imagen para mejor legibilidad */
+    border-radius: 25px;
+    transition: background 0.3s ease;
+  }
+
+  .admin-button:hover::after {
+    background: rgba(0,0,0,0.2);
+  }
+
+  .admin-button span {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .admin-buttons {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 576px) {
+    .admin-buttons {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="admin-panel animate__animated animate__fadeInDown">
+  <h1 class="admin-title">¿Qué deseas hacer hoy?</h1>
+
+  <div class="admin-buttons">
+    <!-- Fila 1 (4 botones) -->
+   <a href="/admin/mensajes" class="admin-button animate__animated animate__zoomIn"
+       style="background-image:url('/images/boton_panel/bandejamensajes.png')">
+       <span>Bandeja de Mensajes</span>
+    </a>
+   
+    <a href="/admin/anuncios" class="admin-button animate__animated animate__zoomIn"
+       style="background-image:url('/images/boton_panel/gestionaranuncio.png')">
+       <span>Gestionar Anuncios</span>
+    </a>
+
+    <a href="/admin/editor/requisitos" class="admin-button animate__animated animate__zoomIn"
+       style="background-image:url('/images/boton_panel/editarrequisito.png')">
+       <span>Editar Requisitos</span>
+    </a>
+
+    <a href="/admin/editor/editar_beneficios" class="admin-button animate__animated animate__zoomIn"
+       style="background-image:url('/images/boton_panel/editarbeneficio.png')">
+       <span>Editar Beneficios</span>
+    </a>
+
+    <a href="/admin/editor/testimonio" class="admin-button animate__animated animate__zoomIn"
+       style="background-image:url('/images/boton_panel/militar.png')">
+       <span>Editar Comentario Militar</span>
+    </a>
+
+    <!-- Fila 2 (3 botones) -->
+    <a href="/admin/publicar" class="admin-button animate__animated animate__zoomIn"
+       style="background-image:url('/images/boton_panel/crearpublicacion.png')">
+       <span>Crear Publicación</span>
+    </a>
+
+    <a href="/admin/usuarios" class="admin-button animate__animated animate__zoomIn"
+   style="background-image:url('/images/boton_panel/usuarios.png')">
+   <span>Lista de Usuarios</span>
+</a>
+
+<a href="/admin/resultados" class="admin-button animate__animated animate__zoomIn"
+   style="background-image:url('/images/boton_panel/resultados.png')">
+   <span>Resultado de Juegos</span>
+</a>
+
+    <a href="/admin/agregarciudadano" class="admin-button animate__animated animate__zoomIn"
+       style="background-image:url('/images/boton_panel/comentariociudadano.png')">
+       <span>Comentario Ciudadano</span>
+    </a>
+
+
+    <a href="/admin/contador_vistas" class="admin-button animate__animated animate__zoomIn"
+   style="background-image:url('/images/boton_panel/contador.png')">
+   <span>Contador de Visitas</span>
+</a>
+
+  </div>
+</div>

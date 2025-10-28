@@ -1,0 +1,218 @@
+<% /* views/publicar.ejs */ %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+  body {
+    background-image: url('/images/fondo_verde.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .form-panel-admin, .card {
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 10px;
+  }
+
+  .btn-comando {
+    background-color: #6dbf3f;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    padding: 10px 18px;
+  }
+
+  .btn-comando:hover {
+    background-color: #5aa32e;
+    transform: scale(1.05);
+  }
+
+  .image-gallery {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 5px 0;
+  }
+
+  .image-gallery img {
+    max-height: 120px;
+    border-radius: 6px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  }
+</style>
+
+<div class="container py-5">
+  <h2 class="mb-4 text-center">Crear Nueva Publicación</h2>
+
+  <!-- Formulario para publicación -->
+  <div class="card shadow-sm form-panel-admin mb-5">
+    <div class="card-header bg-success text-white">
+      <strong>Formulario de Publicación</strong>
+    </div>
+    <div class="card-body">
+      <form id="form-publicar" action="/admin/publicar" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="titulo" class="form-label">Título</label>
+          <input type="text" class="form-control" name="titulo" id="titulo" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="descripcion" class="form-label">Descripción</label>
+          <textarea class="form-control" name="descripcion" id="descripcion" rows="3" required></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="categoria" class="form-label">Categoría</label>
+          <select class="form-select" name="categoria" id="categoria" required>
+            <option value="proyeccion-social">Proyección Social</option>
+            <option value="gestion-riesgo">Gestión de Riesgo en Apoyo a Desastres Naturales</option>
+            <option value="actos-civicos">Actos Cívicos</option>
+            <option value="medio-ambiente">Mejoramiento del Medio Ambiente</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="fecha_actividad" class="form-label">Fecha de la Actividad</label>
+          <input type="date" class="form-control" name="fecha_actividad" id="fecha_actividad" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="imagenes" class="form-label">Imágenes</label>
+          <input 
+            type="file" 
+            class="form-control" 
+            name="imagenes" 
+            id="imagenes" 
+            accept="image/*" 
+            multiple 
+            required>
+        </div>
+
+        <button type="submit" class="btn btn-comando animate__animated animate__pulse animate__infinite">
+          Publicar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Publicaciones existentes -->
+  <div class="row">
+    <% if (publicaciones.length === 0) { %>
+      <p class="text-center">No hay publicaciones aún.</p>
+    <% } else { %>
+      <!-- 🔘 Formulario para eliminar múltiples -->
+      <form id="form-eliminar-multiple" action="/admin/eliminar-multiple" method="POST">
+        <div class="text-end mb-3">
+          <button type="button" class="btn btn-danger" id="btnEliminarSeleccionadas">
+            🗑️ Eliminar seleccionadas
+          </button>
+        </div>
+
+        <div class="row">
+          <% publicaciones.forEach(pub => { %>
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card h-100 shadow-sm">
+                
+                <!-- Checkbox para seleccionar -->
+                <div class="form-check m-2">
+                  <input class="form-check-input chk-publicacion" type="checkbox" name="ids[]" value="<%= pub.id %>">
+                  <label class="form-check-label">Seleccionar</label>
+                </div>
+
+                <% if (pub.imagenes && pub.imagenes.length > 0) { %>
+                  <div class="image-gallery">
+                    <% pub.imagenes.forEach(img => { %>
+                      <img src="<%= img %>" alt="Imagen de publicación">
+                    <% }) %>
+                  </div>
+                <% } %>
+
+                <div class="card-body">
+                  <h5 class="card-title"><%= pub.titulo %></h5>
+                  <p class="card-text"><%= pub.descripcion %></p>
+                  <span class="badge bg-secondary text-capitalize">
+                    <%= pub.categoria.replace('_', ' ') %>
+                  </span><br>
+                  <small class="text-muted">Actividad realizada el: 
+                    <%= pub.fecha_actividad ? new Date(pub.fecha_actividad).toLocaleDateString() : 'No registrada' %>
+                  </small>
+                </div>
+
+                <div class="card-footer d-flex justify-content-center">
+  <a href="/admin/editar/<%= pub.id %>" class="btn btn-comando px-4">Editar</a>
+</div>
+
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Mostrar mensaje si se publicó -->
+<script>
+  <% if (typeof publicado !== 'undefined' && publicado) { %>
+    Swal.fire({
+      icon: 'success',
+      title: '¡Actividad publicada!',
+      showConfirmButton: false,
+      timer: 1800
+    });
+  <% } %>
+</script>
+
+<!-- Confirmación antes de eliminar -->
+<script>
+  document.querySelectorAll('.btn-eliminar').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const pubId = this.getAttribute('data-id');
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Esta acción no se puede deshacer.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        backdrop: true,
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('form-eliminar-' + pubId).submit();
+        }
+      });
+    });
+  });
+
+  // ✅ Eliminar seleccionadas
+  document.getElementById('btnEliminarSeleccionadas')?.addEventListener('click', function () {
+    const seleccionados = document.querySelectorAll('.chk-publicacion:checked');
+    if (seleccionados.length === 0) {
+      Swal.fire('Selecciona al menos una publicación', '', 'info');
+      return;
+    }
+
+    Swal.fire({
+      title: `¿Eliminar ${seleccionados.length} publicaciones?`,
+      text: "Esta acción no se puede deshacer.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById('form-eliminar-multiple').submit();
+      }
+    });
+  });
+</script>

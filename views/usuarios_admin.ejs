@@ -1,0 +1,106 @@
+<%- include('partials/header') %>
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  h2 {
+    font-weight: bold;
+    color: #4a148c;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  }
+
+  .custom-table {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    background: #fff;
+  }
+
+  .custom-table thead {
+    background: #6a1b9a;
+    color: #fff;
+    font-size: 18px;
+  }
+
+  .custom-table td, .custom-table th {
+    padding: 18px;
+    vertical-align: middle;
+    border: none !important;
+  }
+
+  /* Colores alternos pastel */
+  .custom-table tbody tr:nth-child(1n) { background: #fce4ec; } /* Rosado */
+  .custom-table tbody tr:nth-child(2n) { background: #e1f5fe; } /* Celeste */
+  .custom-table tbody tr:nth-child(3n) { background: #f3e5f5; } /* Lila */
+  .custom-table tbody tr:nth-child(4n) { background: #fff9c4; } /* Amarillo pastel */
+
+  /* Hover sobresaliente con degradado */
+  .custom-table tbody tr {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+  }
+
+  .custom-table tbody tr:hover {
+    transform: scale(1.02);
+    z-index: 2;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    cursor: pointer;
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%) !important;
+    color: #fff;
+  }
+
+  /* Badge más elegante */
+  .badge-custom {
+    font-size: 14px;
+    padding: 8px 14px;
+    border-radius: 25px;
+    color: #fff;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+  }
+  .badge-admin {
+    background: linear-gradient(135deg, #ef5350, #d32f2f); /* rojo degradado */
+  }
+  .badge-user {
+    background: linear-gradient(135deg, #42a5f5, #1e88e5); /* azul degradado */
+  }
+</style>
+
+<div class="container mt-5 animate__animated animate__fadeIn">
+  <h2 class="fw-bold text-center mb-4">👥 Lista de Usuarios Registrados</h2>
+
+  <table class="table text-center custom-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Email</th>
+        <th>Rol</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (usuarios.length > 0) { %>
+        <% usuarios.forEach((u, i) => { %>
+          <tr>
+            <td><strong><%= i + 1 %></strong></td>
+            <td><%= u.nombre %></td>
+            <td><%= u.apellido %></td>
+            <td><%= u.email %></td>
+            <td>
+              <span class="badge-custom <%= u.rol === 'admin' ? 'badge-admin' : 'badge-user' %>">
+                <%= u.rol %>
+              </span>
+            </td>
+          </tr>
+        <% }) %>
+      <% } else { %>
+        <tr>
+          <td colspan="5" class="text-center text-muted">No hay usuarios registrados.</td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,120 @@
+<% /* views/gestion_requisitos.ejs */ %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+  body {
+    background-image: url('/images/fondo_verde.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: Arial, sans-serif;
+  }
+
+  .admin-form {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    margin-bottom: 40px;
+  }
+
+  .form-section-title {
+    color: #2c4a2c;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  .btn-comando {
+    background-color: #6dbf3f;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 18px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .btn-comando:hover {
+    background-color: #5aa32e;
+    transform: scale(1.05);
+  }
+</style>
+
+<div class="container py-5">
+  <h2 class="text-center mb-5">Gestión de Requisitos, Beneficios y Testimonios</h2>
+
+  <!-- Requisitos -->
+  <div class="admin-form">
+    <h4 class="form-section-title">Requisitos</h4>
+    <form action="/admin/requisitos/guardar" method="POST">
+      <% requisitos.forEach((req, index) => { %>
+        <div class="mb-2">
+          <input type="text" class="form-control" name="nuevos_requisitos" value="<%= req.texto %>" required>
+        </div>
+      <% }) %>
+      <div class="mb-2">
+        <input type="text" class="form-control" name="nuevos_requisitos" placeholder="Agregar nuevo requisito">
+      </div>
+      <button type="submit" class="btn btn-comando mt-3">Guardar Requisitos</button>
+    </form>
+  </div>
+
+  <!-- Beneficios -->
+  <div class="admin-form">
+    <h4 class="form-section-title">Beneficios</h4>
+    <form action="/admin/beneficios/guardar" method="POST">
+      <% beneficios.forEach((ben, index) => { %>
+        <div class="mb-2">
+          <input type="text" class="form-control" name="nuevos_beneficios" value="<%= ben.texto %>" required>
+        </div>
+      <% }) %>
+      <div class="mb-2">
+        <input type="text" class="form-control" name="nuevos_beneficios" placeholder="Agregar nuevo beneficio">
+      </div>
+      <button type="submit" class="btn btn-comando mt-3">Guardar Beneficios</button>
+    </form>
+  </div>
+
+  <!-- Testimonios -->
+  <div class="admin-form">
+    <h4 class="form-section-title">Testimonios</h4>
+    <% testimonios.forEach((testi, index) => { %>
+      <form action="/admin/testimonios/editar/<%= testi.id %>" method="POST" enctype="multipart/form-data" class="mb-4">
+        <input type="text" class="form-control mb-2" name="nombre" value="<%= testi.nombre %>" placeholder="Nombre del testimonio" required>
+        <textarea class="form-control mb-2" name="cita" rows="2" placeholder="Cita del testimonio" required><%= testi.cita %></textarea>
+        <input type="file" class="form-control mb-2" name="imagen">
+        <% if (testi.imagen) { %>
+          <img src="<%= testi.imagen %>" alt="Foto" class="img-fluid rounded mt-2" style="max-height: 120px;">
+        <% } %>
+        <div class="d-flex justify-content-between mt-2">
+          <button type="submit" class="btn btn-comando">Guardar Cambios</button>
+        </div>
+      </form>
+      <form action="/admin/testimonios/eliminar/<%= testi.id %>" method="POST" class="mb-4">
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+      </form>
+    <% }) %>
+
+    <!-- Formulario para nuevo testimonio -->
+    <form action="/admin/testimonios/nuevo" method="POST" enctype="multipart/form-data" class="mb-4">
+      <h5 class="mb-3">Agregar nuevo testimonio</h5>
+      <input type="text" class="form-control mb-2" name="nombre" placeholder="Nombre del testimonio" required>
+      <textarea class="form-control mb-2" name="cita" rows="2" placeholder="Cita del testimonio" required></textarea>
+      <input type="file" class="form-control mb-2" name="imagen" required>
+      <button type="submit" class="btn btn-comando">Agregar Testimonio</button>
+    </form>
+  </div>
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  <% if (typeof actualizado !== 'undefined' && actualizado) { %>
+    Swal.fire({
+      icon: 'success',
+      title: '¡Actualizado correctamente!',
+      showConfirmButton: false,
+      timer: 2000
+    });
+  <% } %>
+</script>

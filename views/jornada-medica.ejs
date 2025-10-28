@@ -1,0 +1,141 @@
+<% /* views/jornada-medica.ejs */ %>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<style>
+  html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url('/images/fondo_verde.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  padding-top: 50px; /* 👈 espacio para compensar el navbar */
+}
+
+h1.titulo-flotante {
+  text-align: center;
+  color: #004d40;
+  font-size: 2.4rem;
+  font-weight: bold;
+  margin-top: 0; /* 👈 evita doble espacio */
+  margin-bottom: 20px;
+  animation: fadeInDown 1s ease;
+}
+
+  .contenido {
+    padding: 20px;
+    max-width: 1100px;
+    margin: 0 auto 50px auto;
+  }
+
+  .publicacion {
+    background: linear-gradient(145deg, #ffffff, #8eddf5);
+    border-radius: 12px;
+    margin-bottom: 30px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .publicacion:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+  }
+
+  .publicacion h3 {
+    font-weight: bold;
+    color: #2e2e2e;
+  }
+
+  .publicacion p {
+    color: #333;
+  }
+
+  .image-carousel {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-top: 10px;
+  }
+
+  .image-carousel img {
+    height: 180px;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+  }
+
+  .image-carousel img:hover {
+    transform: scale(1.05);
+  }
+
+  .fecha {
+    color: #555;
+    font-size: 0.95rem;
+    font-style: italic;
+    margin-top: 10px;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<!-- Título flotante -->
+<h1 class="titulo-flotante">Jornada Médica</h1>
+
+<!-- Contenedor de publicaciones -->
+<div class="contenido">
+  <% if (publicaciones.length === 0) { %>
+    <p class="text-center text-muted">No hay publicaciones disponibles.</p>
+  <% } else { %>
+    <% publicaciones.forEach(pub => { %>
+      <div class="publicacion">
+        <div class="row align-items-center">
+          <div class="col-md-7">
+            <h3><%= pub.titulo %></h3>
+            <p><%= pub.descripcion %></p>
+            <p class="fecha">
+              Fecha de la actividad: 
+              <%= pub.fecha_actividad 
+                    ? new Date(pub.fecha_actividad).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: '2-digit' }) 
+                    : 'No registrada' %>
+            </p>
+          </div>
+          <div class="col-md-5 text-center mb-3">
+            <% if (pub.imagenes && pub.imagenes.length > 0) { %>
+              <div id="carousel-<%= pub.id %>" class="carousel slide carousel-fade shadow-sm" data-bs-ride="carousel" data-bs-interval="3500">
+                <div class="carousel-inner">
+                  <% pub.imagenes.forEach((img, index) => { %>
+                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                      <img src="<%= img %>" class="d-block w-100 rounded" style="height: 250px; object-fit: cover;" alt="Imagen de publicación">
+                    </div>
+                  <% }) %>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-<%= pub.id %>" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel-<%= pub.id %>" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Siguiente</span>
+                </button>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  <% } %>
+</div>

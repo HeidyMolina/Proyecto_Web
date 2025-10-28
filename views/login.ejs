@@ -1,0 +1,192 @@
+<% /* views/login.ejs */ %>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url('/images/fondo_verde.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat-y;
+  background-attachment: fixed;
+}
+
+/* Panel del formulario */
+.form-panel {
+  padding: 40px;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.form-control {
+  background-color: #f4fff0;
+  border: 1px solid #c0e6ab;
+  color: #2b2b2b;
+}
+
+.form-control:focus {
+  border-color: #a3d977;
+  box-shadow: 0 0 0 0.2rem rgba(163, 217, 119, 0.4);
+}
+
+/* Botón */
+.btn-comando {
+  background-color: #3f48bf;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-comando:hover {
+  background-color: #2330e0;
+}
+
+/* Cuadro blanco del saludo */
+.saludo-panel {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  margin: auto;
+}
+
+.saludo-panel h3 {
+  font-weight: bold;
+  color: #004d40;
+}
+
+.military-quote {
+  font-size: 1.05rem;
+  color: #333;
+  margin-top: 15px;
+}
+
+/* Toggle contraseña */
+.password-container {
+  position: relative;
+  width: 100%;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: #333;
+}
+
+/* 📱 Responsivo */
+@media (max-width: 991px) {
+  .vh-100 {
+    height: auto !important;
+  }
+
+  .container-fluid {
+    padding: 20px 10px;
+  }
+
+  .form-panel, .saludo-panel {
+    margin: 20px auto;
+  }
+
+  .img-fluid {
+    max-height: 200px !important;
+  }
+}
+</style>
+
+<div class="container-fluid vh-100 d-flex align-items-center">
+  <div class="row w-100">
+
+    <!-- Columna Izquierda: Login -->
+    <div class="col-12 col-md-6 d-flex justify-content-center align-items-center p-4 order-1 order-md-1">
+      <div class="form-panel animate__animated animate__fadeInLeft">
+        <h2 class="mb-4 text-center">Iniciar Sesión</h2>
+        <form action="/login" method="POST">
+          <div class="mb-3">
+            <label for="email" class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <div class="password-container">
+              <input type="password" class="form-control" id="password" name="password" required>
+              <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-comando w-100">Ingresar</button>
+        </form>
+        <p class="mt-3 text-center">
+          <a href="/forgot-password" class="text-dark">¿Olvidaste tu contraseña?</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Texto + Imagen dentro de cuadro blanco -->
+    <div class="col-12 col-md-6 d-flex justify-content-center align-items-center text-center p-5 order-2 order-md-2">
+      <div class="saludo-panel animate__animated animate__fadeInRight">
+        <h3 class="mb-4 animate__animated animate__fadeInDown">¡Bienvenido!</h3>
+        <p class="military-quote animate__animated animate__fadeInUp">
+          Estás ingresando a una plataforma militar diseñada especialmente para ti. 
+          Aquí encontrarás información importante: herramientas educativas, juegos de entrenamiento y un asistente virtual listo para resolver tus dudas.
+          <br><br>
+          Prepárate para conocer, aprender, practicar y reforzar tus conocimientos de forma dinámica y accesible. 
+          ¡Regístrate e inicia sesión ahora!
+        </p>
+        <img src="/images/saludo.png" alt="Saludo Militar" class="img-fluid mt-4 animate__animated animate__zoomIn" style="max-height: 220px;">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // 👁️ Toggle mostrar/ocultar contraseña
+  const togglePassword = document.getElementById("togglePassword");
+  const passwordInput = document.getElementById("password");
+
+  togglePassword.addEventListener("click", () => {
+    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+    passwordInput.setAttribute("type", type);
+    togglePassword.classList.toggle("fa-eye");
+    togglePassword.classList.toggle("fa-eye-slash");
+  });
+</script>
+
+<% if (typeof msg !== "undefined" && msg) { %>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      Swal.fire({
+        title: '🚫 Error de Inicio de Sesión',
+        html: '<b style="font-size:22px;"><%= msg.text %></b>',
+        icon: '<%= msg.type %>',
+        background: 'linear-gradient(135deg, #c31432, #240b36)',
+        color: '#fff',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#ff4b5c',
+        width: '500px',
+        padding: '2rem',
+        allowOutsideClick: false, 
+        allowEscapeKey: false,
+        customClass: {
+          popup: 'animate__animated animate__zoomIn',
+          title: 'fw-bold fs-2'
+        }
+      });
+    });
+  </script>
+<% } %>

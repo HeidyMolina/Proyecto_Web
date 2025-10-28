@@ -1,0 +1,67 @@
+/* Contenedor principal que une el chat y la imagen */
+.contenedor-jurba {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #d6fcdc; /* Verde claro */
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  max-width: 900px;
+  margin: auto;
+  margin-top: 50px;
+}
+
+/* Estilo del cuadro de chat */
+.chat-jurba {
+  background-color: #004d40;
+  border-radius: 15px;
+  padding: 15px;
+  width: 60%;
+  color: white;
+}
+
+/* Encabezado del chat */
+.chat-header {
+  background-color: #004d40;
+  padding: 10px;
+  border-radius: 10px 10px 0 0;
+  font-weight: bold;
+}
+
+/* Área de mensajes */
+.chat-body {
+  background-color: white;
+  height: 200px;
+  overflow-y: auto;
+  border-radius: 0 0 0 0;
+  margin-bottom: 10px;
+  color: black;
+  padding: 10px;
+}
+
+/* Input y botón de enviar */
+.chat-input {
+  display: flex;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 5px 0 0 5px;
+}
+
+.chat-input button {
+  background-color: #00695c;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 0 5px 5px 0;
+}
+
+/* Imagen del soldado */
+.imagen-jurba img {
+  width: 200px;
+  height: auto;
+}

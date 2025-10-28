@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Fuente retro -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap y Animate.css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root {
+      --azul-1:#5ac8fa;
+      --azul-2:#4f7cff;
+      --verde-1:#00e676;
+      --rojo-1:#ff5252;
+      --card-bg: linear-gradient(145deg, rgba(255,255,255,.95), rgba(240,248,255,.95));
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Press Start 2P', cursive;
+      background: url('/images-requisitos/imagederechos.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 40px auto;
+      padding: 16px;
+    }
+
+    /* ===== Bloque hero ===== */
+    .hero {
+      margin-top: 60px; /* 👈 baja todo el bloque para que no lo tape el encabezado */
+      background: linear-gradient(135deg, var(--azul-2), #22d3ee);
+      color: #fff;
+      border-radius: 28px;
+      padding: 28px 22px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero:after {
+      content: "";
+      position: absolute;
+      inset: -40px -60px auto auto;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 60%);
+      filter: blur(2px);
+      animation: orb 6s ease-in-out infinite alternate;
+    }
+    @keyframes orb {
+      to { transform: translate(-10px,10px) scale(1.06); }
+    }
+
+    .badge-soft {
+      display:inline-block;
+      padding:6px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.18);
+      color:#fff;
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,.35);
+      font-weight:800;
+      letter-spacing:.3px;
+    }
+
+    /* ===== Tarjeta del quiz ===== */
+    .card-quiz {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 14px 30px rgba(0,0,0,.12);
+      margin-top: 22px;
+      text-align: center;
+      color: #000;
+      position: relative;
+    }
+    .card-quiz::before {
+      content: "★";
+      font-size: 32px;
+      color: gold;
+      position: absolute;
+      top: -26px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* ===== Barra de progreso ===== */
+    .progress {
+      height: 18px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.08);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-bar {
+      background: linear-gradient(90deg, var(--azul-2), var(--azul-1));
+      font-weight: 800;
+    }
+
+    /* ===== Opciones ===== */
+    .opciones {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr; /* una columna en móvil */
+    }
+    @media (min-width:768px) {
+      .opciones { grid-template-columns: 1fr 1fr; }
+    }
+
+    .opcion, .btn-next, #btnReintentar, #btnMenu {
+      background: #00ff4c;
+      border: 3px solid #000;
+      border-radius: 4px;
+      padding: 15px 20px;
+      font-family: 'Press Start 2P', cursive;
+      color: #000;
+      text-transform: uppercase;
+      box-shadow: 4px 4px 0 #000;
+      transition: transform .2s ease;
+      cursor: pointer;
+    }
+
+.opcion:hover, .btn-next:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #000;
+}
+
+    .opcion.correct{ background: linear-gradient(135deg, #eafff5, #ffffff); box-shadow:0 10px 26px rgba(16,185,129,.35); }
+    .opcion.correct .letra{ background: linear-gradient(135deg, #10b981, #22c55e); }
+    .opcion.incorrect{ background: linear-gradient(135deg, #fff0f0, #ffffff); box-shadow:0 10px 26px rgba(244,63,94,.25); }
+    .opcion.incorrect .letra{ background: linear-gradient(135deg, #ef4444, #f97316); }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:999px; font-weight:800;
+      background:#fff; color:#0f172a; box-shadow: 0 10px 20px rgba(0,0,0,.08);
+    }
+    .pill .dot{ width:10px; height:10px; border-radius:50%; background: var(--verde-1); }
+
+    .btn-next{
+      border:0; border-radius:14px; padding:12px 18px; font-weight:800;
+      background: linear-gradient(135deg, var(--azul-2), var(--azul-1));
+      color:#fff; box-shadow:0 12px 24px rgba(2,0,84,.25);
+    }
+    .btn-next:disabled{ opacity:.5; box-shadow:none; }
+
+    .stats{
+      display:flex; gap:10px; flex-wrap: wrap;
+    }
+    .stats .stat{
+      background:#fff; border-radius:14px; padding:10px 14px; font-weight:800;
+      box-shadow:0 6px 14px rgba(0,0,0,.08);
+    }
+
+    .result-card{
+      text-align:center; padding:26px 18px;
+      background: linear-gradient(145deg, #ffffff, #ecfeff);
+      border-radius:24px; box-shadow:0 16px 32px rgba(0,0,0,.12);
+    }
+
+    /* Confeti canvas */
+    #confettiCanvas{
+      position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:9999; display:none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="wrap">
+    <div class="hero mb-4 animate__animated animate__fadeInDown">
+  <div class="d-flex justify-content-between align-items-center">
+    <span class="badge-soft">MiniJuego</span>
+    <div class="stats">
+  <div class="stat" style="color:#000;">⏱️ Tiempo: <span id="tiempo">0:00</span></div>
+<div class="stat" style="color:#000;">✔️ Aciertos: <span id="rondaScore">0</span></div>
+</div>
+
+
+  </div>
+  <h1 class="mt-3 mb-2 fw-bold">Derechos Humanos y Derecho Internacional Humanitario</h1>
+  <p class="mb-0">Pon a prueba tus conocimientos legales y humanitarios. ¡Responde correctamente y demuestra tu compromiso con la dignidad humana y las normas del DIH! ⚖️🕊️</p>
+</div>
+
+
+
+
+    <div class="card-quiz animate__animated animate__fadeInUp">
+  <!-- Progreso -->
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <div class="pill"><span class="dot"></span> Progreso</div>
+    <div class="fw-bold"><span id="nActual">1</span>/<span id="nTotal">10</span></div>
+  </div>
+  <div class="progress mb-3">
+    <div id="barra" class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%">0%</div>
+  </div>
+
+  <!-- Pregunta -->
+  <h3 id="enunciado" class="mb-3">Cargando…</h3>
+
+  <!-- Opciones -->
+  <div id="opciones" class="opciones"></div>
+
+  <!-- Botones principales -->
+  <div class="d-flex gap-2 justify-content-end mt-3">
+    <button id="btnIniciar" class="btn-next">Iniciar</button>
+    <button id="btnSiguiente" class="btn-next" style="display:none">Siguiente</button>
+    <button id="btnReintentar" class="btn btn-outline-secondary rounded-3" style="display:none">Reintentar</button>
+    <a href="/juegos" class="btn btn-outline-primary rounded-3" id="btnMenu" style="display:none">Menú de Juegos</a>
+  </div>
+</div>
+
+<!-- 🔥 Botón fijo abajo SIEMPRE visible -->
+<div class="text-center mt-3">
+  <a href="/minigame" class="btn btn-warning rounded-3">Volver a menú Juegos</a>
+</div>
+
+<!-- Resultado final -->
+<div id="final" class="result-card mt-4 animate__animated animate__fadeIn" style="display:none">
+  <h2 class="fw-bold mb-2">¡Buen trabajo! 🎉</h2>
+  <p class="mb-1">Aciertos en esta ronda: <strong><span id="finalRonda">0</span>/<span id="finalTotal">0</span></strong></p>
+  <p class="mb-1">Tiempo total: <strong><span id="tiempoFinal">0:00</span></strong> ⏱️</p>
+  <div class="d-flex gap-2 justify-content-center">
+    <button id="btnOtraVez" class="btn btn-success rounded-3">Jugar otra vez</button>
+    <button id="btnReset" class="btn btn-danger rounded-3">Borrar progreso</button>
+  </div>
+</div>
+
+<script>
+const preguntas = [
+  {
+    q: "¿Qué se entiende por “costumbre de guerra” en el marco del DIH?",
+    a: [
+      "A) Reglas escritas en tratados internacionales ratificados por los Estados.",
+      "B) Prácticas aceptadas como obligatorias aun sin estar escritas, siempre que respeten humanidad y necesidad militar.", // ✅
+      "C) Estrategias militares tradicionales de cada ejército nacional."
+    ],
+    ok: 1,
+    referencia: "Art. 38 del Estatuto de la Corte Internacional de Justicia; aplicable en Guatemala por ratificación.",
+    explicacion: "Las costumbres de guerra no siempre están en tratados, pero obligan como derecho internacional consuetudinario."
+  },
+  {
+    q: "¿Qué prácticas están prohibidas durante un conflicto armado según el DIH?",
+    a: [
+      "A) Ataques directos a civiles, tortura y destrucción sin necesidad militar.", // ✅
+      "B) Intercambio de prisioneros bajo supervisión de la Cruz Roja.",
+      "C) El uso de uniformes para identificar a combatientes."
+    ],
+    ok: 0,
+    referencia: "Convenios de Ginebra 1949, ratificados por Guatemala en 1952.",
+    explicacion: "El DIH prohíbe expresamente los ataques a civiles, torturas y daños innecesarios."
+  },
+  {
+    q: "¿Qué principios rigen la conducción de hostilidades?",
+    a: [
+      "A) Rapidez, sorpresa y efectividad.",
+      "B) Distinción, proporcionalidad y necesidad militar.", // ✅
+      "C) Movilidad, fuego y maniobra."
+    ],
+    ok: 1,
+    referencia: "Protocolo adicional I a los Convenios de Ginebra, arts. 48 y 51.",
+    explicacion: "Los tres principios básicos del DIH son distinción, proporcionalidad y necesidad."
+  },
+  {
+    q: "¿Qué obligación tienen las fuerzas armadas respecto a los bienes culturales en un conflicto?",
+    a: [
+      "A) Protegerlos y no destruirlos salvo imperiosa necesidad militar.", // ✅
+      "B) Usarlos como puntos de control militar si lo requiere la misión.",
+      "C) Considerarlos objetivos válidos si están en territorio enemigo."
+    ],
+    ok: 0,
+    referencia: "Convención de La Haya de 1954, ratificada por Guatemala.",
+    explicacion: "El patrimonio cultural debe preservarse aun en conflictos armados."
+  },
+  {
+    q: "¿Qué institución supervisa en Guatemala que las fuerzas armadas respeten el DIH?",
+    a: [
+      "A) El Congreso de la República y la Corte Suprema de Justicia.",
+      "B) El Ministerio de la Defensa Nacional, con apoyo de la PDH y el CICR.", // ✅
+      "C) La Secretaría General de la Presidencia."
+    ],
+    ok: 1,
+    referencia: "Constitución de Guatemala art. 183; Ley de la PDH (Decreto 54-86).",
+    explicacion: "El Ministerio de Defensa aplica, la PDH supervisa y el CICR colabora."
+  },
+  {
+    q: "¿Qué principio protege a los civiles durante un conflicto armado?",
+    a: [
+      "A) El principio de distinción.", // ✅
+      "B) El principio de movilidad.",
+      "C) El principio de ataque proporcional."
+    ],
+    ok: 0,
+    referencia: "Protocolo adicional I, art. 48; DIH consuetudinario.",
+    explicacion: "Se debe distinguir siempre entre civiles y combatientes."
+  },
+  {
+    q: "¿Qué derechos tienen los prisioneros de guerra?",
+    a: [
+      "A) Ser interrogados bajo cualquier método para obtener información.",
+      "B) Ser intercambiados únicamente si lo autoriza el Estado Mayor.",
+      "C) Ser tratados con humanidad, recibir alimentos, atención médica y no sufrir torturas." // ✅
+    ],
+    ok: 2,
+    referencia: "Tercer Convenio de Ginebra, art. 13-16.",
+    explicacion: "Los prisioneros no pierden su dignidad humana."
+  },
+  {
+    q: "¿Cuántos Convenios de Ginebra existen y en qué año fueron adoptados?",
+    a: [
+      "A) Cinco, en 1950.",
+      "B) Tres, en 1945.",
+      "C) Cuatro, en 1949." // ✅
+    ],
+    ok: 2,
+    referencia: "Convenios de Ginebra de 1949.",
+    explicacion: "Son 4 tratados fundamentales que regulan la protección en conflictos armados."
+  },
+  {
+    q: "¿Qué regula el Tercer Convenio de Ginebra?",
+    a: [
+      "A) El trato de los prisioneros de guerra.", // ✅
+      "B) La protección de bienes culturales en caso de guerra.",
+      "C) El uso de armas químicas en los conflictos armados."
+    ],
+    ok: 0,
+    referencia: "Tercer Convenio de Ginebra, 1949.",
+    explicacion: "Establece normas claras para garantizar la dignidad de los prisioneros."
+  },
+  {
+    q: "¿Qué principios deben respetar las fuerzas de seguridad en operaciones?",
+    a: [
+      "A) Iniciativa, velocidad, sorpresa y seguridad.",
+      "B) Legalidad, necesidad, proporcionalidad y rendición de cuentas.", // ✅
+      "C) Flexibilidad, resistencia y disciplina táctica."
+    ],
+    ok: 1,
+    referencia: "Código de Conducta para Funcionarios Encargados de Hacer Cumplir la Ley (ONU, adoptado por Guatemala).",
+    explicacion: "Los DD. HH. imponen límites claros al uso de la fuerza."
+  }
+];
+
+
+
+
+
+    // ======= Estado =======
+    
+   const N = preguntas.length;
+let idx = 0;
+let rondaCorrectas = 0;
+const KEY_TOTAL = 'quiz_derechos_total_correctas';
+
+let opcionesActuales = []; // guarda la mezcla de respuestas de la pregunta actual
+
+// 🕒 Cronómetro
+let tiempo = 0;          
+let intervaloTiempo = null;
+
+function iniciarCronometro() {
+  tiempo = 0;
+  if (intervaloTiempo) clearInterval(intervaloTiempo);
+
+  intervaloTiempo = setInterval(() => {
+    tiempo++;
+    document.getElementById('tiempo').textContent = formatearTiempo(tiempo);
+  }, 1000);
+}
+
+function detenerCronometro() {
+  if (intervaloTiempo) clearInterval(intervaloTiempo);
+}
+
+function formatearTiempo(segundos) {
+  const min = Math.floor(segundos / 60);
+  const seg = segundos % 60;
+  return `${min}:${seg.toString().padStart(2, '0')}`;
+}
+
+
+
+    // ======= DOM =======
+   // ======= DOM =======
+const enunciado  = document.getElementById('enunciado');
+const contOps    = document.getElementById('opciones');
+const barra      = document.getElementById('barra');
+const nAct       = document.getElementById('nActual');
+const nTot       = document.getElementById('nTotal');
+const btnIniciar = document.getElementById('btnIniciar');
+const btnSig     = document.getElementById('btnSiguiente');
+const btnReint   = document.getElementById('btnReintentar');
+const btnMenu    = document.getElementById('btnMenu');
+const rondaSpan  = document.getElementById('rondaScore');
+const totalSpan  = document.getElementById('totalScore');
+
+const finalBox   = document.getElementById('final');
+const finalRonda = document.getElementById('finalRonda');
+const finalTotal = document.getElementById('finalTotal');
+const btnOtraVez= document.getElementById('btnOtraVez');
+const btnReset   = document.getElementById('btnReset');
+
+
+
+
+
+    const confettiCanvas = document.getElementById('confettiCanvas');
+    const ctx = confettiCanvas.getContext('2d');
+
+    // ======= Util =======
+    function getTotal() { return parseInt(localStorage.getItem(KEY_TOTAL) || '0', 10); }
+    function setTotal(v) { localStorage.setItem(KEY_TOTAL, String(v)); }
+
+    function pct(){
+      const p = Math.round((idx / N) * 100);
+      barra.style.width = p + '%';
+      barra.textContent = p + '%';
+    }
+
+    function resetAcumuladoUI() {
+  setTotal(0);
+  totalSpan.textContent = '0';
+}
+
+
+
+function renderPregunta(){
+  const p = preguntas[idx];
+  enunciado.textContent = p.q;
+  contOps.innerHTML = '';
+  const letras = ['A','B','C','D','E'];
+
+  // mezclar opciones
+  opcionesActuales = p.a.map((texto, i) => ({
+    texto,
+    esCorrecta: i === p.ok
+  }));
+  for (let i = opcionesActuales.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [opcionesActuales[i], opcionesActuales[j]] = [opcionesActuales[j], opcionesActuales[i]];
+  }
+
+  opcionesActuales.forEach((op, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opcion animate__animated animate__fadeIn';
+    btn.innerHTML = `
+      <div class="letra">${letras[i]}</div>
+      <div>${op.texto}</div>
+    `;
+    btn.addEventListener('click', () => seleccionar(i));
+    contOps.appendChild(btn);
+  });
+
+  nAct.textContent = idx + 1;
+  nTot.textContent = N;
+  pct();
+  btnSig.disabled = true;
+}
+
+// ✅ Nueva función
+function bloquearOpciones(){
+  [...contOps.children].forEach(b => b.disabled = true);
+}
+
+// ✅ Aquí sí va la parte de correcta / incorrecta
+function seleccionar(i){
+  bloquearOpciones();
+
+  const correcta = opcionesActuales.findIndex(op => op.esCorrecta);
+
+  [...contOps.children].forEach((b, j) => {
+    if (j === correcta) {
+      b.classList.add('correct','animate__pulse');
+    } else {
+      b.classList.add('incorrect','animate__shakeX');
+    }
+  });
+
+  // Contamos punto si eligió la correcta
+  if (i === correcta) {
+    rondaCorrectas++;
+    guardarProgreso();
+    // 🔊 sonido correcto
+    new Audio('/audio/quizcorrecto.mp3').play();
+  } else {
+    // 🔊 sonido incorrecto
+    new Audio('/audio/quizincorrecto.mp3').play();
+  }
+
+  rondaSpan.textContent = rondaCorrectas;
+  btnSig.disabled = true;
+
+  // Esperar antes de mostrar el modal
+  setTimeout(() => {
+    const actual = preguntas[idx];
+    const ref = actual.referencia || "Explicación: DH y DIH";
+    const explicacion = actual.explicacion || "";
+
+    document.getElementById('refArticulo').textContent = ref;
+    document.getElementById('detalleArticulo').textContent = explicacion;
+
+    const modalEl = document.getElementById('explicacionModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+
+    modalEl.addEventListener('hidden.bs.modal', () => {
+      btnSig.disabled = false;
+    }, { once: true });
+  }, 1000);
+}
+
+
+
+function guardarProgreso(){
+  localStorage.setItem(KEY_TOTAL, rondaCorrectas);
+  localStorage.setItem('quiz_derechos_tiempo', tiempo);
+}
+
+
+function terminar(){
+  finalRonda.textContent = rondaCorrectas;
+  finalTotal.textContent = N;
+
+  detenerCronometro();
+  document.getElementById('tiempoFinal').textContent = formatearTiempo(tiempo);
+
+  // calcular porcentaje de aciertos
+  const porcentaje = Math.round((rondaCorrectas / N) * 100);
+  let mensajeFinal = "";
+
+  if (porcentaje === 100) {
+    mensajeFinal = "¡Excelente! Has completado todo con disciplina, como un verdadero soldado 👏🎖️";
+  } else if (porcentaje >= 70) {
+    mensajeFinal = "¡Muy bien! Has demostrado que dominas lo esencial del tema. Sigue practicando hasta alcanzar la excelencia 💪";
+  } else {
+    mensajeFinal = "Debes repasar un poco más. Repite el juego y refuerza tus conocimientos en Derechos Humanos y Derecho Internacional Humanitario, ¡NO TE RINDAS SOLDADO!";
+  }
+
+// ✅ Aquí guardamos el resultado en la base de datos
+  fetch('/guardar-resultado', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      juego: "Derechos Humanos", // 👈 cambia según el juego
+      puntaje: rondaCorrectas,
+      tiempo: tiempo
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.ok) {
+      console.log("Resultado guardado correctamente");
+    } else {
+      console.log("Error al guardar resultado");
+    }
+  })
+  .catch(err => console.error("Error en fetch:", err));
+
+  // 🧹 limpiar anteriores
+  finalBox.querySelectorAll("p.mt-3, img.victoria-img").forEach(el => el.remove());
+
+  // insertar imagen de victoria
+  const imgVictoria = document.createElement("img");
+  imgVictoria.src = "/images-requisitos/victoria1.png";
+  imgVictoria.className = "victoria-img mb-3 animate__animated animate__zoomIn";
+  imgVictoria.style.maxWidth = "200px";
+  finalBox.appendChild(imgVictoria);
+
+  // insertar mensaje final
+  const resultadoExtra = document.createElement("p");
+  resultadoExtra.className = "mt-3 fw-bold text-dark";
+  resultadoExtra.textContent = mensajeFinal;
+  finalBox.appendChild(resultadoExtra);
+
+  // 🎉 confeti
+  lanzarConfeti(140);
+  setTimeout(detenerConfeti, 3200);
+
+  // 🔊 audios de victoria
+  new Audio('/audio/soysoldado.mp3').play();
+  new Audio('/audio/victoria.mp3').play();
+
+  document.querySelector('.card-quiz').classList.add('animate__fadeOut');
+  setTimeout(() => {
+    document.querySelector('.card-quiz').style.display = 'none';
+    finalBox.style.display = 'block';
+  }, 300);
+}
+
+
+
+btnIniciar.addEventListener('click', ()=>{
+  // reiniciar estado de la ronda
+  idx = 0; 
+  rondaCorrectas = 0; 
+  rondaSpan.textContent = '0';
+
+  // mostrar primera pregunta
+  enunciado.textContent = 'Presiona una opción...';
+  contOps.innerHTML = '';
+  nTot.textContent = N; 
+  nAct.textContent = 0;
+  barra.style.width = '0%'; 
+  barra.textContent = '0%';
+
+  // ocultar/mostrar botones
+  btnIniciar.style.display = 'none';
+  btnSig.style.display = 'inline-block';
+  btnSig.disabled = true;
+  btnReint.style.display = 'none';
+  btnMenu.style.display = 'none';
+
+  // iniciar cronómetro y preguntas
+  iniciarCronometro();
+  renderPregunta();
+});
+
+btnSig.addEventListener('click', () => {
+  if(idx < N-1){
+    idx++;
+    renderPregunta();
+  }else{
+    terminar();
+    btnSig.style.display = 'none';
+    btnReint.style.display = 'inline-block';
+    btnMenu.style.display  = 'inline-block';
+  }
+});
+
+btnReint.addEventListener('click', () => {
+  // reiniciar SOLO la ronda actual
+  idx = 0; 
+  rondaCorrectas = 0;
+  rondaSpan.textContent = '0';
+  document.querySelector('.card-quiz').style.display = 'block';
+  finalBox.style.display = 'none';
+  btnSig.style.display = 'inline-block';
+  btnSig.disabled = true;
+  btnReint.style.display = 'none';
+  btnMenu.style.display  = 'none';
+  renderPregunta();
+});
+
+btnOtraVez.addEventListener('click', () => {
+  location.reload(); // 🔥 recarga toda la página
+});
+
+
+// 🔥 Botón para "Borrar progreso" (tiempo + correctas)
+// ⚠️ Asegúrate de tener solo 1 botón con id="btnReset"
+btnReset.addEventListener('click', (e) => {
+  e.preventDefault();
+
+  Swal.fire({
+    title: '¿Borrar progreso?',
+    text: 'Se reiniciará tu tiempo y respuestas correctas.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí',
+    cancelButtonText: 'No',
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#aaa',
+    background: '#fff',
+    color: '#000',
+    width: '480px',
+    padding: '1em',
+    customClass: { popup: 'animate__animated animate__fadeInDown' }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 🧹 resetear progreso
+      localStorage.removeItem('quiz_derechos_tiempo');
+    localStorage.removeItem('quiz_derechos_total_correctas');
+
+      tiempo = 0;   
+      rondaCorrectas = 0;
+      document.getElementById('tiempo').textContent = '0:00';
+      document.getElementById('tiempoFinal').textContent = '0:00';
+      rondaSpan.textContent = '0';
+      finalRonda.textContent = '0';
+
+      Swal.fire({
+        title: 'Progreso borrado ✅',
+        toast: true,
+        position: 'top',
+        timer: 1500,
+        showConfirmButton: false,
+        background: '#fff',
+        color: '#000'
+      });
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      // 👉 toast de cancelación
+      Swal.fire({
+        title: 'Acción cancelada ❌',
+        toast: true,
+        position: 'top',
+        timer: 1200,
+        showConfirmButton: false,
+        background: '#fff',
+        color: '#000'
+      });
+    }
+  });
+});
+
+
+
+    // ======= Confeti simple =======
+    let confettis = [], confetiActivo = false;
+    function crearConfeti(){
+      return {
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * -50,
+        r: Math.random() * 6 + 4,
+        d: Math.random() * 100,
+        color: `hsl(${Math.random()*360}, 80%, 60%)`,
+        tilt: Math.random() * 10 - 5,
+        tiltAngle: 0,
+        tiltAngleIncrement: Math.random() * 0.07 + 0.05
+      };
+    }
+    function lanzarConfeti(n=120){
+      confetiActivo = true;
+      confettis = Array.from({length:n}, crearConfeti);
+      confettiCanvas.style.display = 'block';
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+      requestAnimationFrame(dibujarConfeti);
+    }
+    
+    function dibujarConfeti(){
+      ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+      confettis.forEach(c=>{
+        ctx.beginPath();
+        ctx.lineWidth = c.r;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r/2, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r);
+        ctx.stroke();
+      });
+      confettis.forEach(c=>{
+        c.tiltAngle += c.tiltAngleIncrement;
+        c.y += Math.cos(0.01 + c.d) + 2;
+        c.tilt = Math.sin(c.tiltAngle) * 15;
+      });
+      if(confetiActivo) requestAnimationFrame(dibujarConfeti);
+    }
+    function detenerConfeti(){
+      confetiActivo = false;
+      confettiCanvas.style.display = 'none';
+      ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+    }
+    window.addEventListener('resize', ()=>{
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    });
+
+    // ======= Init =======
+// ======= Init =======
+(function init(){
+  nTot.textContent = N;
+
+  // ✅ Recuperar último progreso guardado
+  const ultimoAciertos = localStorage.getItem(KEY_TOTAL);
+  const ultimoTiempo   = localStorage.getItem('quiz_derechos_tiempo');
+
+  if (ultimoAciertos !== null) {
+    rondaSpan.textContent = ultimoAciertos;
+    finalRonda.textContent = ultimoAciertos;
+  } else {
+    rondaSpan.textContent = '0';
+  }
+
+  if (ultimoTiempo !== null) {
+    document.getElementById('tiempo').textContent = formatearTiempo(parseInt(ultimoTiempo, 10));
+    document.getElementById('tiempoFinal').textContent = formatearTiempo(parseInt(ultimoTiempo, 10));
+  } else {
+    document.getElementById('tiempo').textContent = '0:00';
+  }
+
+  enunciado.textContent = 'Presiona INICIAR para comenzar';
+})();
+
+
+// Reiniciar animaciones al abrir el modal
+const modalEl = document.getElementById('explicacionModal');
+modalEl.addEventListener('show.bs.modal', () => {
+  const img = modalEl.querySelector('img');
+  const text = modalEl.querySelector('.animate__fadeInRight');
+  
+  // Reinicia animación de la imagen
+  img.classList.remove('animate__fadeInLeft');
+  void img.offsetWidth; 
+  img.classList.add('animate__fadeInLeft');
+
+  // Reinicia animación del texto
+  text.classList.remove('animate__fadeInRight');
+  void text.offsetWidth;
+  text.classList.add('animate__fadeInRight');
+});
+</script>
+
+
+<!-- Modal Explicación -->
+<div class="modal fade" id="explicacionModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Referencia:</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex align-items-start gap-3">
+        <!-- Imagen del soldado con animación -->
+        <img src="/images/3.png" alt="Soldado explicando" 
+             style="width: 80px; height: auto;" 
+             class="flex-shrink-0 animate__animated animate__fadeInLeft">
+
+        <!-- Texto de referencia y explicación con animación -->
+        <div class="animate__animated animate__fadeInRight">
+          <h6 id="refArticulo" class="fw-bold text-dark"></h6>
+          <p id="detalleArticulo" class="text-dark"></p>
+        </div>
+      </div>
+
+      <!-- Footer del modal con botón Entendido -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Resultado final -->
+<div id="final" class="result-card mt-4 animate__animated animate__fadeIn" style="display:none">
+  <h2 class="fw-bold mb-2">¡Buen trabajo! 🎉</h2>
+  <p class="mb-1">Aciertos en esta ronda: <strong><span id="finalRonda">0</span>/<span id="finalTotal">0</span></strong></p>
+  <p class="mb-1">Tiempo total: <strong><span id="tiempoFinal">0:00</span></strong> ⏱️</p>
+  <div class="d-flex gap-2 justify-content-center">
+    <button id="btnOtraVez" class="btn btn-success rounded-3">Jugar otra vez</button>
+    <button id="btnReset" class="btn btn-danger rounded-3">Borrar progreso</button>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Jerarquía Militar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Fuente retro -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap y Animate.css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    body {
+      font-family: 'Press Start 2P', cursive;
+      background: url('/images-requisitos/imagepatrullaje.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+    .wrap { max-width: 1100px; margin: 40px auto; padding: 16px; }
+
+    /* Tarjetas */
+    .tarjeta {
+      width: 120px;
+      height: 160px;
+      background: linear-gradient(145deg, #e0ffe5, #ffffff);
+      border: 3px solid #000;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 8px;
+      cursor: grab;
+      box-shadow: 4px 4px 0 #000;
+      user-select: none;
+    }
+    .tarjeta img { max-width: 70px; margin-bottom: 6px; }
+    .tarjeta span { font-size: 10px; text-align: center; }
+
+    /* Contenedores */
+    .columna {
+      min-height: 90vh;
+      padding: 12px;
+      border: 3px dashed #333;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.2);
+    }
+    .slot {
+      width: 130px;
+      height: 170px;
+      margin: 6px auto;
+      border: 2px dashed #555;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .slot.ocupado { border-style: solid; background: #f0fff0; }
+
+    /* Cronómetro */
+    .progress {
+      height: 18px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.08);
+    }
+    .progress-bar {
+      background: linear-gradient(90deg, #ff5252, #ff0000);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap text-center">
+    <h1 class="mb-3 text-white animate__animated animate__fadeInDown">Jerarquía Militar</h1>
+    <p class="text-white">Ordena los grados militares de mayor a menor en 30 segundos. ¡Rápido soldado! 🪖</p>
+
+    <!-- Cronómetro -->
+    <div class="progress mb-4">
+      <div id="barraTiempo" class="progress-bar progress-bar-striped progress-bar-animated" style="width:100%">30s</div>
+    </div>
+
+    <div class="row">
+      <!-- Tarjetas revueltas -->
+      <div class="col-md-6 columna" id="colIzquierda">
+        <h5 class="text-white mb-3">Tarjetas disponibles</h5>
+        <div id="mazo" class="d-flex flex-wrap justify-content-center"></div>
+      </div>
+
+      <!-- Slots -->
+      <div class="col-md-6 columna" id="colDerecha">
+        <h5 class="text-white mb-3">Orden jerárquico</h5>
+        <div id="slots"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const grados = [
+      "General de División", "General de Brigada", "Coronel",
+      "Teniente Coronel", "Mayor", "Capitán Primero", "Capitán Segundo",
+      "Teniente", "Subteniente", "Sargento Mayor", "Sargento Primero",
+      "Sargento Segundo", "Cabo Primero", "Cabo Segundo", "Soldado"
+    ];
+
+    let tiempo = 30;
+    let timer;
+
+    const mazo = document.getElementById("mazo");
+    const slots = document.getElementById("slots");
+    const barra = document.getElementById("barraTiempo");
+
+    // 🔹 Crear tarjetas revueltas
+    const indices = [...Array(grados.length).keys()];
+    const mezclados = indices.sort(() => Math.random() - 0.5);
+
+    mezclados.forEach(i => {
+      // omitimos el primer grado (General de División) porque va fijo
+      if (i === 0) return;
+      const card = document.createElement("div");
+      card.className = "tarjeta animate__animated animate__bounceIn";
+      card.draggable = true;
+      card.dataset.indice = i;
+      card.innerHTML = `
+        <img src="/images/grados/eje${i+1}.png" alt="Insignia">
+        <span>${grados[i]}</span>`;
+      mazo.appendChild(card);
+    });
+
+    // 🔹 Crear slots (el primero fijo)
+    grados.forEach((g, i) => {
+      const slot = document.createElement("div");
+      slot.className = "slot";
+      slot.dataset.correcto = i;
+      if (i === 0) {
+        slot.classList.add("ocupado");
+        slot.innerHTML = `
+          <div class="tarjeta">
+            <img src="/images/grados/eje1.png">
+            <span>${grados[0]}</span>
+          </div>`;
+      }
+      slots.appendChild(slot);
+    });
+
+    // 🔹 Drag & Drop
+    let dragged = null;
+    document.addEventListener("dragstart", e => {
+      if (e.target.classList.contains("tarjeta")) {
+        dragged = e.target;
+        e.dataTransfer.effectAllowed = "move";
+      }
+    });
+    document.addEventListener("dragover", e => {
+      if (e.target.classList.contains("slot") && !e.target.classList.contains("ocupado")) {
+        e.preventDefault();
+      }
+    });
+    document.addEventListener("drop", e => {
+      if (e.target.classList.contains("slot") && !e.target.classList.contains("ocupado")) {
+        const indiceCorrecto = parseInt(e.target.dataset.correcto);
+        const indiceCarta = parseInt(dragged.dataset.indice);
+        if (indiceCorrecto === indiceCarta) {
+          e.target.classList.add("ocupado");
+          e.target.appendChild(dragged);
+          dragged.draggable = false;
+          Swal.fire({ toast:true, title:"¡Correcto!", icon:"success", timer:800, showConfirmButton:false });
+          verificarFin();
+        } else {
+          Swal.fire({ toast:true, title:"Incorrecto", icon:"error", timer:800, showConfirmButton:false });
+        }
+      }
+    });
+
+    // 🔹 Cronómetro
+    function iniciarTiempo(){
+      timer = setInterval(()=>{
+        tiempo--;
+        const pct = (tiempo/30)*100;
+        barra.style.width = pct+"%";
+        barra.textContent = tiempo+"s";
+        if(tiempo<=0){ clearInterval(timer); perder(); }
+      },1000);
+    }
+    iniciarTiempo();
+
+    // 🔹 Verificar si terminó
+    function verificarFin(){
+      const completados = document.querySelectorAll(".slot.ocupado").length;
+      if(completados === grados.length){
+        clearInterval(timer);
+        Swal.fire({
+          title:"🎉 ¡Excelente, General!",
+          html:"Has dominado la jerarquía militar.<br>🇬🇹🎖️",
+          icon:"success",
+          confirmButtonText:"Desfile Final"
+        }).then(()=>{
+          location.reload();
+        });
+      }
+    }
+
+    function perder(){
+      Swal.fire({
+        title:"❌ Se acabó el tiempo",
+        text:"Debes repasar los grados, soldado. ¡Inténtalo de nuevo!",
+        icon:"error",
+        confirmButtonText:"Reintentar"
+      }).then(()=>{ location.reload(); });
+    }
+  </script>
+</body>
+</html>

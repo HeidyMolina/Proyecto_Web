@@ -1,0 +1,510 @@
+<%- include('partials/header') %>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+:root{
+  /* ⇦ AJUSTA al alto real de tu header fijo (en px) */
+  --headerH: 110px;
+}
+
+/* ====== SCROLL #1: BODY ====== */
+html, body { height: 100%; }
+body{
+  overflow-y: auto; /* 🔥 scroll del body */
+  background: url('/images/boton_panel/mensajes.png') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Press Start 2P', cursive, monospace;
+  color:#fff;
+  animation: fadeInBody 1s ease;
+}
+
+/* ====== LAYOUT GENERAL ====== */
+/* Un grid de 2 filas: (card auto) + (chat 1fr dentro del viewport) */
+.page-chat{
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: calc(100dvh - var(--headerH)); /* 🔥 alto exacto visible bajo el header */
+  min-height: 0; /* permite que el hijo scrollee */
+  gap: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* Contenedor del chat: 2 columnas (usuarios + conversación) */
+.chat-container{
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1rem;
+  min-height: 0; /* clave para scroll interno */
+}
+
+
+/* ====== SCROLL #2: LISTA DE USUARIOS ====== */
+.usuarios-lista{
+  overflow: auto;         /* 🔥 su propio scroll */
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
+  padding:1rem;
+  color:#1e3a8a;
+  min-height: 0;          /* importante en grid/flex */
+  scrollbar-gutter: stable both-edges;
+}
+.usuarios-lista .usuario{
+  padding:.7rem; border-radius:12px; cursor:pointer; margin-bottom:.6rem;
+  background:linear-gradient(135deg,#f0f9ff,#e0f2fe);
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+  transition:all .25s ease;
+}
+.usuarios-lista .usuario:hover{ background:linear-gradient(135deg,#bae6fd,#e0f2fe); transform:scale(1.03); }
+.usuarios-lista .usuario strong{ color:#0f172a; }
+.usuarios-lista .usuario small{ color:#334155; }
+
+/* ====== PANEL DE CONVERSACIÓN ====== */
+.conversacion{
+  position: relative;   /* 🔥 para que .mensajes se “pegue” a sus bordes */
+  border-radius:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  background:url('/images/boton_panel/fondochat.png') no-repeat center center;
+  background-size:cover;
+  min-height: 0;        /* clave en grid/flex */
+  overflow: hidden;     /* el scroll lo hace .mensajes */
+}
+.msg.admin strong {
+  color: black !important;
+  font-weight: bold;
+}
+
+/* ====== SCROLL #3: MENSAJES ====== */
+/* La caja de mensajes ocupa TODO el panel con absolute y scrollea sola */
+.mensajes{
+  height: 100%;                 /* ✅ ocupa todo el espacio disponible */
+  overflow-y: auto !important;  /* ✅ fuerza el scroll vertical */
+  overflow-x: hidden;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;  /* ✅ anclar arriba, así se puede subir/bajar */
+  gap: 10px;                    /* espacio entre mensajes */
+}
+
+
+/* Scrollbars bonitos */
+.mensajes::-webkit-scrollbar,
+.usuarios-lista::-webkit-scrollbar{ width:10px; }
+.mensajes::-webkit-scrollbar-thumb,
+.usuarios-lista::-webkit-scrollbar-thumb{ background:rgba(0,0,0,.4); border-radius:10px; }
+.mensajes::-webkit-scrollbar-thumb:hover,
+.usuarios-lista::-webkit-scrollbar-thumb:hover{ background:rgba(0,0,0,.6); }
+
+/* ====== BURBUJAS ====== */
+.msg{
+  max-width:680px; border-radius:20px; padding:14px 16px; position:relative;
+  font-size:.8rem; font-family:'Press Start 2P', cursive, monospace;
+  animation:fadeInUp .6s ease; border:2px solid #fff;
+  box-shadow:0 0 15px rgba(255,255,255,.4);
+  word-wrap:break-word;
+  margin-bottom:1rem;
+}
+.msg img{ max-width:200px; border-radius:12px; margin-top:.4rem; box-shadow:0 6px 14px rgba(0,0,0,.15); }
+.msg small{ font-size:.75rem; opacity:.8; }
+.msg.usuario{
+  align-self:flex-start; margin-right:auto;
+  background:linear-gradient(135deg,#e0f7ff,#dbeafe); color:#111;
+}
+.msg.admin{
+  align-self:flex-end; margin-left:auto;
+  background:linear-gradient(135deg,#00f7ff,#3704af); color:#fff;
+}
+
+/* Acciones / badges / reacciones (como ya las tenías) */
+.acciones{ display:flex; gap:.5rem; justify-content:flex-end; background:rgba(255,255,255,.6);
+  padding:.4rem .6rem; border-radius:10px; margin-top:.5rem; box-shadow:0 4px 8px rgba(0,0,0,.1);
+  animation:fadeIn .3s ease-in-out; }
+.acciones .btn{ border-radius:12px; font-weight:600; transition:transform .15s ease, background .3s; box-shadow:0 4px 0 rgba(0,0,0,.2); }
+.acciones .btn:hover{ transform:scale(1.05); filter:brightness(1.1); }
+.btn:active{ transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,.25); }
+.badge{ font-size:.8rem; padding:.4rem .7rem; border-radius:14px; box-shadow:0 2px 6px rgba(0,0,0,.1); animation:pulseBadge 1.5s infinite alternate; }
+.reaccion{ display:inline-block; background:rgba(0,0,0,.05); border-radius:12px; padding:2px 8px; margin-top:4px; font-size:1.1rem; box-shadow:0 2px 5px rgba(0,0,0,.1); }
+.reaccion-destacada{ position:absolute; bottom:8px; right:12px; font-size:2.8rem; opacity:.95; pointer-events:none; animation:pop .4s ease; }
+
+/* Animaciones */
+@keyframes fadeInBody{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+@keyframes fadeInUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
+@keyframes pulseBadge{ from{transform:scale(1);} to{transform:scale(1.1);} }
+@keyframes pop{ 0%{transform:scale(.3); opacity:0;} 70%{transform:scale(1.3); opacity:1;} 100%{transform:scale(1); opacity:.95;} }
+
+/* --- Flechas de scroll en el panel de conversación --- */
+.conversacion{ position:relative; } /* por si no lo tenías */
+.scroll-controls{
+  position:absolute; right:10px; bottom:10px;
+  display:flex; flex-direction:column; gap:8px;
+  z-index:5;
+}
+.scroll-btn{
+  width:42px; height:42px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.9); color:#111;
+  border:2px solid rgba(0,0,0,.15);
+  box-shadow:0 6px 14px rgba(0,0,0,.18);
+  cursor:pointer; transition:transform .12s ease, filter .2s ease;
+}
+.scroll-btn:hover{ transform:scale(1.06); filter:brightness(1.03); }
+.scroll-btn:active{ transform:translateY(1px) scale(1.02); }
+
+/* Opcional: mostrar/ocultar al pasar el mouse por el panel */
+.conversacion .scroll-controls{ opacity:.95; transition:opacity .2s ease; }
+.conversacion:not(:hover) .scroll-controls{ opacity:.75; }
+
+/* Asegura que el área de mensajes pueda scrollear aunque el tema o bootstrap lo pisen */
+.mensajes{ overflow-y:auto !important; overscroll-behavior:contain; }
+
+/* Arrastrar para desplazar (UX tipo “hand-scroll”) */
+.mensajes{ cursor:grab; }
+.mensajes.scrolling{ cursor:grabbing; }
+
+.page-chat, .chat-container, .conversacion, .usuarios-lista, .mensajes { min-height: 0; }
+.mensajes { padding-bottom: 64px; }
+
+/* asegúrate de tener esto junto a tus otras reglas */
+.conversacion { position: relative; }
+.mensajes{ position:absolute; inset:0; z-index:1; }
+.scroll-controls{ position:absolute; right:10px; bottom:10px; z-index:2; }
+
+/* Estilo retro como tu mini-juego */
+.swal2-popup{
+  font-family:'Press Start 2P', cursive, monospace;
+  border-radius:18px;
+  background:linear-gradient(135deg,#3b82f6,#9333ea);
+  color:#fff;
+  box-shadow:0 14px 30px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.25);
+}
+.swal2-title{ text-shadow:0 2px 0 rgba(0,0,0,.25); }
+.swal2-html-container{ color:#eaf2ff; opacity:.95; }
+.swal2-confirm, .swal2-cancel{
+  font-family:'Press Start 2P', cursive, monospace;
+  border-radius:12px !important;
+  box-shadow:0 6px 0 rgba(0,0,0,.25);
+}
+.swal2-confirm{ background:#22c55e !important; }
+.swal2-cancel{ background:#ef4444 !important; }
+
+</style>
+
+
+<div class="page-chat">
+  <!-- Enviar mensaje a todos -->
+  <div class="card shadow-sm p-3 animate__animated animate__fadeInDown"
+       style="background:linear-gradient(135deg,#3b82f6,#9333ea); color:#fff;">
+    <h5 class="fw-bold">📢 Enviar mensaje a todos los usuarios</h5>
+    <form action="/admin/mensajes/global" method="POST" enctype="multipart/form-data">
+      <textarea name="mensaje" class="form-control mb-2" rows="2" placeholder="Escribe un anuncio para todos..." required></textarea>
+      <input type="file" name="imagen" class="form-control mb-2" accept="image/*">
+      <button class="btn btn-light fw-bold">Enviar a todos 🚀</button>
+    </form>
+  </div>
+
+  
+
+  <!-- Chat -->
+  <div class="chat-container">
+    <!-- Lista de usuarios -->
+    <aside class="usuarios-lista">
+      <h5 class="fw-bold"><i class="bi bi-people"></i> Usuarios</h5><hr>
+      <% if (usuarios && usuarios.length) { %>
+        <% usuarios.forEach(u => { if (u.rol !== 'admin') { %>
+          <div class="usuario <%= (u.pendientes > 0 ? 'bg-info text-dark fw-bold' : '') %>"
+               onclick="abrirConversacion(<%- u.id %>)">
+            <strong><%= u.nombre %> <%= u.apellido %></strong><br>
+            <% if (u.pendientes > 0) { %>
+              <span class="fw-bold text-dark"><%= u.pendientes %> pendientes</span>
+            <% } else { %>
+              <small class="text-muted">Sin pendientes</small>
+            <% } %>
+          </div>
+        <% }}) %>
+      <% } else { %>
+        <p class="text-muted">No hay usuarios con mensajes.</p>
+      <% } %>
+    </aside>
+
+    <!-- Conversación -->
+    <section class="conversacion">
+      <div class="mensajes" id="mensajesArea">
+        <p class="text-muted">Selecciona un usuario para ver la conversación.</p>
+      </div>
+
+<!-- Controles de navegación del chat -->
+<div class="scroll-controls">
+  <button class="scroll-btn" id="btnTop" title="Ir al inicio"><i class="bi bi-chevron-double-up"></i></button>
+  <button class="scroll-btn" id="btnUp" title="Subir"><i class="bi bi-chevron-up"></i></button>
+  <button class="scroll-btn" id="btnDown" title="Bajar"><i class="bi bi-chevron-down"></i></button>
+  <button class="scroll-btn" id="btnBottom" title="Ir al final"><i class="bi bi-chevron-double-down"></i></button>
+</div>
+
+    </section>
+  </div>
+</div>
+
+<div class="d-flex justify-content-end mt-2 px-3">
+  <button class="btn btn-danger btn-sm" onclick="borrarConversacion()">
+    🗑️ Borrar conversación
+  </button>
+</div>
+
+<script>
+let usuarioActivo = null;
+
+// Abrir conversación de un usuario
+function abrirConversacion(id){
+  usuarioActivo = id;
+  fetch(`/admin/mensajes/conversacion/${id}`)
+    .then(r=>r.text())
+    .then(html=>{
+      const area = document.getElementById("mensajesArea");
+      area.innerHTML = html;
+      // baja al último mensaje
+      requestAnimationFrame(() => area.scrollTop = area.scrollHeight);
+    });
+}
+
+
+
+// Archivar conversación completa
+function archivarConversacion(){
+  if(!usuarioActivo) return;
+  if(!confirm("¿Archivar toda la conversación?")) return;
+  fetch(`/admin/mensajes/archivar/${usuarioActivo}`,{method:"POST"})
+    .then(()=> location.reload());
+}
+
+// Mostrar/Ocultar botones de acciones al hacer clic
+function toggleAcciones(id){
+  const el = document.getElementById("acciones-"+id);
+  if (el) el.style.display = (el.style.display === "none" || !el.style.display) ? "flex" : "none";
+}
+
+// Mostrar/Ocultar formulario de respuesta
+function abrirRespuesta(id){
+  const form = document.getElementById(`form-resp-${id}`);
+  if (!form) return;
+
+  form.classList.toggle('d-none');
+
+  // foco automático
+  const txt = form.querySelector('textarea');
+  if (txt && !form.classList.contains('d-none')) {
+    txt.focus({ preventScroll: true });
+    form.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+
+
+// ====== Controles de flechas + arrastre ======
+(function(){
+  const area = document.getElementById('mensajesArea');
+  if (!area) return;
+
+  area.style.overflowY = 'auto';
+
+  const step = 220;   // salto por click
+  const holdStep = 42;// salto al mantener presionado
+  const page = () => Math.max(320, Math.floor(area.clientHeight * 0.85));
+
+  const toTop = () => area.scrollTo({top:0, behavior:'smooth'});
+  const toBottom = () => area.scrollTo({top: area.scrollHeight, behavior:'smooth'});
+  const by = (dy) => area.scrollBy({top: dy, behavior:'smooth'});
+
+  const btnTop = document.getElementById('btnTop');
+  const btnUp = document.getElementById('btnUp');
+  const btnDown = document.getElementById('btnDown');
+  const btnBottom = document.getElementById('btnBottom');
+
+  if (btnTop) btnTop.addEventListener('click', toTop);
+  if (btnBottom) btnBottom.addEventListener('click', toBottom);
+  if (btnUp) btnUp.addEventListener('click', () => by(-step));
+  if (btnDown) btnDown.addEventListener('click', () => by(step));
+
+  function setupHold(el, delta){
+    if (!el) return;
+    let t = null;
+    const start = (e) => { e.preventDefault(); if (t) return; t = setInterval(()=> area.scrollTop += delta, 16); area.classList.add('scrolling'); };
+    const stop  = () => { clearInterval(t); t = null; area.classList.remove('scrolling'); };
+    el.addEventListener('mousedown', start);
+    el.addEventListener('touchstart', start, {passive:false});
+    ['mouseup','mouseleave','touchend','touchcancel'].forEach(evt=> el.addEventListener(evt, stop));
+  }
+  setupHold(btnUp, -holdStep);
+  setupHold(btnDown, +holdStep);
+
+  document.addEventListener('keydown', (e)=>{
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (!document.body.contains(area)) return;
+    switch(e.key){
+      case 'ArrowUp':   e.preventDefault(); area.scrollTop -= 60; break;
+      case 'ArrowDown': e.preventDefault(); area.scrollTop += 60; break;
+      case 'PageUp':    e.preventDefault(); area.scrollTop -= page(); break;
+      case 'PageDown':  e.preventDefault(); area.scrollTop += page(); break;
+      case 'Home':      e.preventDefault(); toTop(); break;
+      case 'End':       e.preventDefault(); toBottom(); break;
+    }
+  });
+
+  // Arrastrar con el mouse para desplazar
+  let dragging = false, startY = 0, startTop = 0;
+  area.addEventListener('mousedown', (e)=>{ dragging=true; startY=e.clientY; startTop=area.scrollTop; area.classList.add('scrolling'); });
+  area.addEventListener('mousemove', (e)=>{ if(!dragging) return; const dy=(e.clientY - startY); area.scrollTop = startTop - dy*1.2; });
+  ['mouseleave','mouseup'].forEach(evt => area.addEventListener(evt, ()=>{ dragging=false; area.classList.remove('scrolling'); }));
+
+  // baja automáticamente al cargar
+  window.addEventListener('load', () => { area.scrollTop = area.scrollHeight; });
+})();
+</script>
+
+<script>
+async function eliminarRespuesta(id){
+  const { isConfirmed } = await Swal.fire({
+    title: '¿Eliminar esta respuesta?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: undefined,
+    iconHtml: '🗑️',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true,
+    backdrop: 'rgba(0,0,0,.5)',
+    showClass: { popup: 'animate__animated animate__zoomIn' },
+    hideClass: { popup: 'animate__animated animate__fadeOut faster' }
+  });
+
+  if (!isConfirmed) return;
+
+  const res = await fetch(`/admin/mensajes/eliminar/${id}`, { method: 'POST' })
+    .then(r => r.json()).catch(() => ({ ok:false }));
+
+  if (res.ok) {
+    await Swal.fire({
+      title: 'Eliminado',
+      icon: 'success',
+      timer: 1100,
+      showConfirmButton: false,
+      background: 'rgba(0,0,0,.85)',
+      color:'#fff',
+      showClass:{ popup:'animate__animated animate__fadeInUp' },
+      hideClass:{ popup:'animate__animated animate__fadeOutDown faster' }
+    });
+    abrirConversacion(usuarioActivo); // recarga la conversación
+  } else {
+    Swal.fire({
+      title: 'Ups',
+      text: 'No se pudo eliminar. Intenta de nuevo.',
+      icon: 'error',
+      confirmButtonText: 'Entendido',
+      showClass:{ popup:'animate__animated animate__shakeX' }
+    });
+  }
+}
+</script>
+
+<script>
+async function editarRespuesta(id){
+  const { value: nuevo, isConfirmed } = await Swal.fire({
+    title: 'Editar respuesta',
+    input: 'textarea',
+    inputLabel: 'Nuevo texto',
+    inputPlaceholder: 'Escribe la respuesta…',
+    inputAttributes: { 'aria-label': 'Nuevo texto' },
+    showCancelButton: true,
+    confirmButtonText: 'Guardar',
+    cancelButtonText: 'Cancelar',
+    showClass:{ popup:'animate__animated animate__zoomIn' },
+    hideClass:{ popup:'animate__animated animate__fadeOut faster' }
+  });
+  if (!isConfirmed || !nuevo?.trim()) return;
+
+  const ok = await fetch(`/admin/mensajes/editar/${id}`,{
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ respuesta: nuevo.trim() })
+  }).then(r=>r.ok).catch(()=>false);
+
+  if (ok) {
+    Swal.fire({ title:'Guardado', icon:'success', timer:900, showConfirmButton:false });
+    abrirConversacion(usuarioActivo);
+  } else {
+    Swal.fire({ title:'Error', text:'No se pudo guardar', icon:'error' });
+  }
+}
+
+
+// Ocultar formulario de respuesta (Cancelar)
+function cancelarRespuesta(id){
+  const form = document.getElementById(`form-resp-${id}`);
+  if (form) {
+    form.classList.add('d-none');
+  }
+}
+
+// Reacciones
+async function handleReaction(id, emoji){
+  // Aquí guardamos la reacción vía fetch (AJAX)
+  const res = await fetch(`/admin/mensajes/reaccion/${id}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reaccion: emoji })
+  }).then(r => r.json()).catch(() => ({ ok:false }));
+
+  if(res.ok){
+    // Mostrar la reacción en grande en la burbuja
+    const target = document.getElementById(`reaccion-destacada-${id}`);
+    if(target) target.innerHTML = emoji;
+  } else {
+    Swal.fire({
+      title:'Ups',
+      text:'No se pudo registrar la reacción',
+      icon:'error',
+      confirmButtonText:'Entendido'
+    });
+  }
+}
+
+async function borrarConversacion(){
+  if(!usuarioActivo) {
+    Swal.fire("Selecciona un usuario primero", "", "warning");
+    return;
+  }
+
+  const { isConfirmed } = await Swal.fire({
+    title: '¿Eliminar toda la conversación?',
+    text: 'Esta acción marcará todos los mensajes como eliminados por el admin.',
+    iconHtml: '🗑️',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true
+  });
+
+  if (!isConfirmed) return;
+
+  const res = await fetch(`/admin/mensajes/archivar/${usuarioActivo}`, { method:'POST' })
+    .then(r => r.json()).catch(()=>({ ok:false }));
+
+  if(res.ok){
+    Swal.fire({ title:'Conversación eliminada', icon:'success', timer:1000, showConfirmButton:false });
+    // refresca lista de usuarios o limpia el área
+    document.getElementById("mensajesArea").innerHTML = "<p class='text-muted'>Conversación eliminada</p>";
+  } else {
+    Swal.fire({ title:'Error', text:'No se pudo eliminar', icon:'error' });
+  }
+}
+
+
+</script>
+
+<%- include('partials/footer') %>

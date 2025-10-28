@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat con JURBA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/chat.css">
+  <style>
+    /* 🔹 Fondo estándar */
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-image: url('/images/fondo_verde.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 100vh;
+      padding-top: 70px; /* espacio para navbar */
+    }
+
+    .main-chat-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+
+    /* 🔹 Contenedor del chat */
+    .chat-container {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      backdrop-filter: blur(6px);
+    }
+
+    /* 🔹 Encabezado */
+    .chat-header {
+      background: linear-gradient(135deg, #29f1f1, #2446dd);
+      color: white;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-avatar {
+      background-color: #fff;
+      color: #2446dd;
+      font-weight: bold;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.1rem;
+    }
+
+    .chat-title {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .chat-status {
+      font-size: 0.9rem;
+      color: #d9f6ff;
+      margin: 0;
+    }
+
+    /* 🔹 Cuerpo del chat */
+    .chat-body {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background-color: #f4f4f4;
+      max-height: 450px;
+    }
+
+    /* 🔹 Burbujas */
+    .bubble {
+      max-width: 80%;
+      margin-bottom: 12px;
+      padding: 10px 15px;
+      border-radius: 20px;
+      position: relative;
+      font-size: 0.95rem;
+    }
+
+    .bubble.user {
+      background-color: #3f48bf; /* Azul comando */
+      color: white;
+      align-self: flex-end;
+      margin-left: auto;
+    }
+
+    .bubble.bot {
+      background-color: #e0f7fa; /* Turquesa claro */
+      color: #003c46;
+      align-self: flex-start;
+      margin-right: auto;
+    }
+
+    .bubble .timestamp {
+      display: block;
+      font-size: 0.7rem;
+      margin-top: 4px;
+      opacity: 0.6;
+    }
+
+    .bubble.user .check {
+      position: absolute;
+      bottom: 5px;
+      right: 10px;
+      font-size: 0.75rem;
+      color: lightgreen;
+    }
+
+    /* 🔹 Input */
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .chat-input button {
+      background-color: #2446dd;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .chat-input button:hover {
+      background-color: #1a2fb0;
+    }
+
+    /* 🔹 Soldado */
+    .soldado-img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 6px 15px rgba(0,0,0,0.3));
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Contenedor principal -->
+  <div class="main-chat-wrapper">
+    <!-- Chat -->
+    <div class="chat-container">
+      <div class="chat-header">
+        <div class="chat-avatar">J</div>
+        <div>
+          <h2 class="chat-title">JURBA</h2>
+          <p class="chat-status">Asistente Virtual Militar</p>
+        </div>
+      </div>
+
+      <div id="chat-body" class="chat-body"></div>
+
+      <form id="chat-form" class="chat-input">
+        <input type="text" id="userInput" placeholder="Haz una pregunta..." autocomplete="off" required />
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+
+    <!-- Imagen del soldado -->
+    <img src="/images/soldado.png" alt="Soldado" class="soldado-img">
+  </div>
+
+   <!-- Configuración global del backend -->
+  <script src="/js/config.js"></script>   <!-- 👈 Se carga primero -->
+  <script src="/js/chat.js"></script>     <!-- 👈 Luego tu lógica del chat -->
+</body>
+</html>

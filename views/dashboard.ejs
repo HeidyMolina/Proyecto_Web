@@ -1,0 +1,527 @@
+<!-- views/dashboard.ejs -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url('/images/fondo_verde.png'); /* ✅ mismo fondo estándar */
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat-y;
+  background-attachment: fixed;
+}
+
+/* Tarjetas de ciudadanos */
+.ciudadano-card {
+  background: linear-gradient(135deg, #0a6e9c, #4f7cff); /* celeste a azul */
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(4, 12, 29, 0.89);
+  transition: all 0.4s ease-in-out;
+  height: 100%;
+  color: #0a0000;
+  position: relative;
+  overflow: hidden;
+}
+
+.ciudadano-card:hover {
+  background: linear-gradient(135deg, #03232e, #005bea); /* celeste fuerte → azul fuerte */
+  color: #f1f1f1;
+  box-shadow: 0 0 35px 12px rgba(0, 140, 255, 0.6);
+  transform: scale(1.04);
+}
+
+.ciudadano-card img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+/* Textos iguales a testimonios */
+.ciudadano-card .nombre {
+  font-weight: bold;
+  font-size: 1.4rem;
+  margin-bottom: 5px;
+  color: #02000a;
+}
+
+.ciudadano-card .grado {
+  font-style: italic;
+  color: #180757;
+  margin-bottom: 10px;
+}
+
+.ciudadano-card .cita {
+  font-size: 0.95rem;
+  color: #030008;
+  margin-bottom: 10px;
+}
+
+
+/* Hover de tarjeta */
+.ciudadano-card:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #3f48bf, #2330e0); /* ✅ tonos azules botón */
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+
+/* Cuadro portada */
+.cuadro-portada {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 20px;
+  margin: 20px auto 0 auto;
+  text-align: center;
+  border-radius: 20px;
+  max-width: 1000px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.3);
+  animation: fadeInDown 1.2s ease-in-out;
+}
+
+.cuadro-portada img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 15px;
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Contenedor general */
+.contenedor-unico {
+  background-image: url('/images/fondo_verde.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  width: 100%;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+/* Otros estilos */
+.logo-mediano {
+  max-height: 100px;
+}
+
+.text-black {
+  color: #0e0e0e;
+}
+
+.card-button {
+  width: 250px;
+  border-radius: 12px;
+  background: #3f48bf; /* azul botón */
+  color: #fff;
+  font-weight: bold;
+}
+
+.card-button:hover {
+  background: #2330e0;
+}
+
+.lead {
+  font-size: 1.2rem;
+}
+
+/* Etiquetas */
+.actividad-label {
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  margin-top: 10px;
+  background: rgba(0,0,0,0.6);
+  padding: 5px;
+  border-radius: 8px;
+}
+
+/* CTA */
+.cta-ejercito {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 15px;
+  color: white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.cta-titulo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #FFD700;
+}
+
+.cta-subtitulo {
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+/* Historia */
+.historia-cuadro {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  color: white;
+  margin-top: 50px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+.historia-texto {
+  font-size: 1.3rem;
+  line-height: 1.6;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: #fffde7;
+}
+
+/* Actividades */
+.actividad-card {
+  width: 250px;
+  height: 270px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.actividad-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.actividad-card:hover img {
+  transform: scale(1.08);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.actividad-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+/* Ajuste: tarjetas blancas para Juega conmigo y Habla conmigo */
+.card-button {
+  background: #ffffff !important; /* fondo blanco */
+  color: #000 !important;         /* texto oscuro */
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* sombra elegante */
+}
+
+.card-button h4,
+.card-button p {
+  color: #000 !important; /* títulos y párrafos en negro */
+}
+
+.card-button .btn-info {
+  background: linear-gradient(135deg, #29f1f1, #2446dd);
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  transition: background 0.3s ease;
+}
+
+.card-button .btn-info:hover {
+  background: linear-gradient(135deg, #2446dd, #29f1f1);
+}
+
+</style>
+
+
+  <!-- Imagen de portada animada en su propio cuadro -->
+<div class="cuadro-portada">
+  <img src="/images/portada4.png" alt="Imagen de Portada" class="img-ajustada">
+</div>
+
+<div class="contenedor-unico">
+
+  <!-- Banner -->
+  <div class="d-flex justify-content-between align-items-center text-center px-3 py-4 flex-wrap">
+    <img src="/images/logo2.png" alt="Logo Izquierdo" class="logo-mediano">
+
+    <div class="flex-fill mx-3 text-center">
+      <h2 class="text-black fw-bold mb-2" style="font-size: 2.4rem; letter-spacing: 3px;">
+        EJÉRCITO DE GUATEMALA
+      </h2>
+      <h3 class="text-black fw-bold mb-1" style="font-size: 2rem;">
+        Cuarta Brigada de Infantería
+      </h3>
+      <h4 class="text-black fw-bold fst-italic mb-1" style="font-size: 1.6rem;">
+        “General Justo Rufino Barrios”
+      </h4>
+      <p class="text-black fw-bold" style="font-size: 1.4rem;">
+        Suchitepéquez - Retalhuleu - Escuintla
+      </p>
+    </div>
+
+    <img src="/images/imagen2.png" alt="Logo Derecho" class="logo-mediano">
+  </div>
+
+  <!-- Cuadro de bienvenida -->
+  <div class="animate__animated animate__zoomIn animate__faster" style="
+    background: rgba(255, 255, 255, 0.8);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+    margin: 30px 0;
+    max-width: 100%;
+  ">
+    <h2 class="text-black mb-3" style="font-size: 1.2rem; font-weight: bold;">
+      Bienvenido, <%= user.nombre %> <%= user.apellido %>!
+    </h2>
+
+    <p class="text-black lead mb-0">
+      Explora las actividades que realiza el Ejército de Guatemala a través de la Cuarta Brigada de Infantería
+      "General Justo Rufino Barrios", con sede en Cuyotenango, Suchitepéquez.
+    </p>
+  </div>
+
+  <!-- Historia -->
+  <div class="historia-cuadro animate__animated animate__fadeInUp">
+    <p class="historia-texto">
+      "Nuestra historia, nuestro honor: Descubre el legado y las transformaciones de la Cuarta Brigada de Infantería ‘General Justo Rufino Barrios’. Conoce sus batallas y el compromiso inquebrantable al servicio del pueblo de Guatemala a lo largo de los años."
+    </p>
+    <a href="/historia" class="btn btn-info animate__animated animate__pulse animate__infinite">Vamos</a>
+  </div>
+
+ <!-- Actividades -->
+<div class="my-5">
+  <h3 class="mb-4 text-black text-center">Actividades de relaciones civiles y militares</h3>
+  <div class="actividad-container">
+  <a href="/proyeccion-social" class="actividad-card">
+    <img src="/images/proyeccion.png" alt="Proyección Social">
+    <div class="actividad-label">Proyección Social</div>
+  </a>
+
+  <a href="/gestion-riesgo" class="actividad-card">
+    <img src="/images/apoyo.png" alt="Gestión de Riesgo">
+    <div class="actividad-label">Gestión de Riesgo</div>
+  </a>
+
+  <a href="/actos-civicos" class="actividad-card">
+    <img src="/images/actos.png" alt="Actos Cívicos">
+    <div class="actividad-label">Actos Cívicos</div>
+  </a>
+
+  <a href="/medio-ambiente" class="actividad-card">
+    <img src="/images/reforestacion.png" alt="Medio Ambiente">
+    <div class="actividad-label">Medio Ambiente</div>
+  </a>
+</div>
+
+</div>
+
+
+  <!-- Herramientas Interactivas -->
+  <div class="text-center my-5">
+    <h3 class="mb-4 text-black">Herramientas Interactivas</h3>
+    <div class="d-flex justify-content-center flex-wrap gap-4">
+      <div class="card card-button animate__animated animate__bounceIn">
+        <div class="card-body text-center">
+          <img src="/images/juega-conmigo.png" alt="Juega Conmigo" class="img-fluid mb-3" style="max-height: 150px;">
+          <h4 class="card-title">¡JUEGA CONMIGO!</h4>
+          <p class="card-text">Entrena mientras te diviertes.</p>
+          <a href="/minigame" class="btn btn-info">Iniciar Juego</a>
+        </div>
+      </div>
+      <div class="card card-button animate__animated animate__bounceIn animate__delay-1s">
+        <div class="card-body text-center">
+          <img src="/images/habla-conmigo.png" alt="Habla Conmigo" class="img-fluid mb-3" style="max-height: 150px;">
+          <h4 class="card-title">¡HABLA CONMIGO!</h4>
+          <p class="card-text">Hazle preguntas al asistente virtual militar.</p>
+          <a href="/assistant" class="btn btn-info">Ir al Asistente</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="mt-5 p-4 text-center cta-ejercito">
+    <h2 class="cta-titulo">¿Quieres formar parte del Glorioso Ejército de Guatemala?</h2>
+    <p class="cta-subtitulo">¡Conviértete en el orgullo de tu familia! Únete a nosotros y forma parte de la historia.</p>
+    <a href="/requisitos" class="btn btn-info btn-lg mt-3 animate__animated animate__pulse animate__infinite">Me interesa</a>
+  </div>
+
+</div>
+
+<!-- Comentarios de Ciudadanos -->
+ 
+<div class="container mt-5">
+  <h3 style="color: #000; text-align: center; font-weight: bold;">
+  Descubre qué piensan los honorables ciudadanos del Ejército de Guatemala
+</h3>
+
+  <div class="row g-4">
+    <% if (comentarios && comentarios.length > 0) { %>
+      <% comentarios.forEach(c => { %>
+        <div class="col-md-4">
+          <div class="ciudadano-card">
+            <img src="<%= c.foto %>" alt="Foto">
+            <h5 class="fw-bold mb-1"><%= c.nombre %></h5>
+            <p class="fst-italic text-light mb-2"><%= c.ocupacion %></p>
+            <p class="mb-0" style="font-size:0.95rem; color:#ffeb3b;">
+              "<%= c.descripcion %>"
+            </p>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p class="text-center text-muted">No hay comentarios de ciudadanos todavía.</p>
+    <% } %>
+  </div>
+</div>
+<!-- Panel de contacto institucional -->
+<!-- ===== FOOTER FULL-BLEED (fuera de contenedores) ===== -->
+<footer class="footer-contacto">
+  <div class="contacto-inner">
+    <!-- Dirección -->
+    <a href="https://www.google.com/maps?q=14.545572,-91.558504" target="_blank" class="contacto-btn">
+      📍 Dirección: km 167, Carretera al Pacífico, Cuyotenango, Guatemala, 502
+    </a>
+
+    <!-- Teléfono (mismo estilo, NO clickeable) -->
+    <span class="contacto-btn no-click">
+      📞 Teléfono: 3999 5720
+    </span>
+
+    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=cuartabrigadajrbarrios@gmail.com" 
+   target="_blank" class="contacto-btn">
+  <i class="bi bi-envelope-fill me-2"></i>✉️ Correo: cuartabrigadajrbarrios@gmail.com
+</a>
+
+    <!-- Facebook -->
+    <a href="https://www.facebook.com/CuartabrigadaGJRB" target="_blank" class="contacto-btn">
+      📘 Facebook
+    </a>
+  </div>
+</footer>
+
+<style>
+/* ===== Full-bleed: el footer se sale de cualquier .container ===== */
+.footer-contacto{
+  background: rgba(0,0,0,0.7);
+  border-top: 4px solid #2446dd;
+  box-shadow: 0 -2px 15px rgba(0,0,0,0.4);
+  color:#fff;
+
+  /* 👇 rompe el ancho limitado del contenedor padre */
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  max-width: 100vw;
+  box-sizing: border-box;
+
+  padding: 15px 0;
+  overflow-x: clip; /* evita scroll horizontal por el full-bleed */
+}
+
+/* Contenido interno responsivo y centrado */
+.contacto-inner{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Chips/botones */
+.contacto-btn{
+  background: linear-gradient(135deg, #29f1f1, #2446dd);
+  color:#fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 30px;
+  padding: 8px 20px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+.contacto-btn:hover{
+  background: linear-gradient(135deg, #2446dd, #29f1f1);
+  color:#fff;
+  transform: scale(1.05);
+}
+
+/* Teléfono: mismo look, pero sin interacción */
+.no-click{
+  pointer-events: none;
+  cursor: default;
+}
+
+/* Mobile */
+@media (max-width: 768px){
+  .contacto-btn{
+    width: 100%;
+    justify-content: center;
+  }
+}
+</style>
+<!-- 🔊 Audio de fondo -->
+<audio id="audioDashboard" src="/audio/ejercito.mp3" loop></audio>
+
+<script>
+  const audioDashboard = document.getElementById("audioDashboard");
+
+  // Intentar reproducir en cuanto carga el dashboard
+  window.addEventListener("load", () => {
+    audioDashboard.currentTime = 0;
+    audioDashboard.play().catch(err => {
+      console.warn("El navegador bloqueó la reproducción automática:", err);
+
+      // Si lo bloquea, mostrar botón flotante para iniciar
+      if (!document.getElementById("btnPlayAudio")) {
+        const btn = document.createElement("button");
+        btn.id = "btnPlayAudio";
+        btn.textContent = "▶ Reproducir Música";
+        Object.assign(btn.style, {
+          position: "fixed",
+          bottom: "20px",
+          right: "20px",
+          padding: "12px 20px",
+          background: "#2e7d32",
+          color: "#fff",
+          border: "none",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontWeight: "bold",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+          zIndex: 9999
+        });
+
+       
+        document.body.appendChild(btn);
+      }
+    });
+  });
+
+  // Pausar el audio cuando se cambie de vista/página
+  window.addEventListener("beforeunload", () => {
+    audioDashboard.pause();
+    audioDashboard.currentTime = 0;
+  });
+</script>

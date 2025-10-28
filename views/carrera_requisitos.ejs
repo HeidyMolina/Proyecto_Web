@@ -1,0 +1,221 @@
+<% /* views/carrera_requisitos.ejs */ %>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('/images-requisitos/minijuegos3.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  h2.titulo-flotante {
+    text-align: center;
+    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 5px black;
+    animation: fadeInDown 1s ease;
+  }
+
+  #pantalla-instrucciones {
+  width: 100%;
+  max-width: 920px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  margin: 80px auto 30px auto; /* 👈 ahora baja 80px desde arriba */
+  display: block;
+}
+
+
+  #juego {
+  display: none;
+  border: 2px solid #198754;
+  border-radius: 10px;
+  background-color: #fff;
+  margin-top: 70px; /* 👈 este margen baja el canvas */
+}
+
+
+  /* 👇 Este lo agregas al final del bloque de estilos */
+  .d-flex.justify-content-center.mb-3 {
+    margin-top: 50px; /* 👈 baja el canvas y deja espacio para ver los requisitos */
+  }
+
+  .btn-jugar,
+  #btnIniciar,
+  #btnReintentarVictoria,
+  #btnReintentarDerrota {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 12px 30px;
+    border-radius: 12px;
+    transition: 0.3s ease;
+  }
+
+  .btn-jugar:hover,
+  #btnIniciar:hover,
+  #btnReintentarVictoria:hover,
+  #btnReintentarDerrota:hover {
+    transform: scale(1.05);
+  }
+
+  /* Modal de victoria */
+  .modal-victoria {
+    position: fixed;
+    z-index: 9999;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/images-requisitos/fuegos.gif') center center no-repeat;
+    background-size: cover;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .modal-contenido {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px #000;
+    max-width: 500px;
+    width: 90%;
+  }
+
+  .modal-contenido h2 {
+    color: #1b5e20;
+    font-size: 2rem;
+    margin-bottom: 15px;
+  }
+
+  .modal-contenido p {
+    font-size: 1.2rem;
+    color: #333;
+    margin-top: 10px;
+  }
+
+  .img-felicidad {
+    max-width: 200px;
+    margin: 15px auto;
+    display: block;
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+
+<!-- Imagen de instrucciones -->
+<div class="text-center">
+  <img id="pantalla-instrucciones" src="/images-requisitos/pantalla1.png" alt="Instrucciones del juego">
+</div>
+
+<!-- Botón para volver al menú principal -->
+<div class="text-center mb-3">
+  <a href="/minigame" class="btn btn-warning rounded-3">Volver a menú Juegos</a>
+</div>
+
+<!-- Canvas del juego -->
+<div class="d-flex justify-content-center mb-3">
+  <canvas id="juego" width="960" height="480" class="border border-success shadow rounded-4"></canvas>
+</div>
+
+<!-- Mensaje de victoria flotante -->
+<div id="mensajeFinal"
+     class="position-absolute top-50 start-50 translate-middle bg-dark text-white p-4 rounded-4 text-center z-3"
+     style="display: none; min-width: 400px;">
+  🎉 ¡Felicidades! Has recogido todos los requisitos.
+</div>
+
+<!-- Puntaje y total -->
+<div class="text-center mb-4" id="barraResultados">
+  <div id="puntaje" class="d-inline-block bg-white px-4 py-2 rounded-3 shadow text-success fw-bold me-2">
+    Requisitos recogidos: 0
+  </div>
+  <div id="totalGastoTexto" class="d-inline-block bg-warning px-4 py-2 rounded-3 shadow fw-bold me-2">
+    Total estimado: Q0.00
+  </div>
+  <!-- Botón Reintentar Derrota -->
+  <button id="btnReintentarDerrota" class="btn btn-danger px-4 animate__animated animate__fadeIn" style="display: none;">
+    Intentar de nuevo
+  </button>
+</div>
+
+<!-- Botón para iniciar -->
+<div class="text-center mb-5" id="btnIniciarWrapper">
+  <button id="btnIniciar" class="btn btn-success btn-lg animate__animated animate__pulse animate__infinite">
+    Iniciar Carrera
+  </button>
+</div>
+
+<div class="d-flex gap-2 justify-content-end mt-3">
+  <button id="btnReintentar" class="btn btn-outline-secondary rounded-3" style="display:none">Reintentar</button>
+  <a href="/juegos" class="btn btn-outline-primary rounded-3" id="btnMenu" style="display:none">Menú de Juegos</a>
+  <!-- 🔥 Nuevo botón para volver al menú principal -->
+
+  
+</div>
+
+<!-- Sonidos -->
+<audio id="sonidoSalto" src="/audio/saltar.mp3" preload="auto"></audio>
+<audio id="sonidoRecolectar" src="/audio/recolectar.mp3" preload="auto"></audio>
+<audio id="audioVictoria" src="/audio/victoria.mp3" preload="auto"></audio>
+
+<!-- Modal de victoria -->
+<div id="modalVictoria" class="modal-victoria">
+  <div class="modal-contenido animate__animated animate__zoomIn">
+    <h2 class="text-success fw-bold">¡Felicidades, futuro soldado!</h2>
+    <img src="/images-requisitos/feliz.png" alt="Feliz" class="img-felicidad">
+
+    <div class="bg-light border border-success rounded-3 p-3 mb-3">
+      <p class="m-0 text-success fw-bold fs-5" id="modalPuntaje">Requisitos recogidos: 0</p>
+      <p class="m-0 text-dark fw-bold fs-5" id="modalGasto"></p>
+    </div>
+
+    <p style="
+      font-size: 1.3rem;
+      font-weight: bold;
+      font-family: 'Georgia', serif;
+      color: #1b1b1b;
+      background: linear-gradient(to right, #c8e6c9, #a5d6a7);
+      padding: 15px;
+      border-radius: 12px;
+      border: 2px solid #2e7d32;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    ">
+      ¡Has recolectado todos los requisitos necesarios para causar alta en el Ejército de Guatemala!
+    </p>
+
+    <button id="btnReintentarVictoria" class="btn btn-danger mt-3 px-4 fw-bold">
+      Jugar de nuevo
+    </button>
+  </div>
+</div>
+
+<!-- Script del juego -->
+<script src="/js/carrera_requisitos.js"></script>
+
+<!-- Iniciar juego al dar clic -->
+<script>
+  document.getElementById('btnIniciar').addEventListener('click', function () {
+    document.getElementById('pantalla-instrucciones').style.display = 'none';
+    document.getElementById('juego').style.display = 'block';
+    this.style.display = 'none';
+    if (typeof iniciarCarrera === 'function') {
+      iniciarCarrera();
+    }
+  });
+</script>

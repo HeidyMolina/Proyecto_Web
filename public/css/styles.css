@@ -1,0 +1,194 @@
+.actividad-card {
+  width: 250px;
+  height: 270px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.actividad-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.actividad-card:hover img {
+  transform: scale(1.08);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.actividad-label {
+  margin-top: 10px;
+  font-weight: bold;
+  color: white;
+  font-size: 1.05rem;
+  background: #215c42;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.actividad-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+}
+
+.cta-ejercito {
+  margin-top: 50px;
+  padding: 30px;
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 15px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.cta-titulo {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #FFD700;
+  text-shadow: 1px 1px 4px #000;
+}
+
+.cta-subtitulo {
+  font-size: 1.2rem;
+  margin-top: 10px;
+  color: #ffffff;
+}
+
+.cta-ejercito .btn {
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 10px 25px;
+  border-radius: 8px;
+}
+
+.historia-cuadro {
+  background-color: #3cf9ea;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  color: white;
+  margin-top: 50px;
+  box-shadow: 0 0 20px rgba(48, 219, 219, 0.244);
+}
+
+.historia-texto {
+  font-size: 1.3rem;
+  line-height: 1.6;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: #fffde7;
+}
+
+.historia-cuadro .btn {
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 10px 25px;
+  border-radius: 8px;
+}
+
+/* ✅ NUEVO CUADRO CONTENEDOR PARA PORTADA */
+.cuadro-portada {
+  background: rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  margin: 20px auto 0 auto;
+  text-align: center;
+  border-radius: 20px;
+  max-width: 1000px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.3);
+  animation: fadeInDown 1.2s ease-in-out;
+}
+
+.cuadro-portada img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 15px;
+}
+
+.form-panel-admin {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.form-control, .form-select {
+  background-color: #f4fff0;
+  border: 1px solid #c0e6ab;
+  color: #2b2b2b;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #a3d977;
+  box-shadow: 0 0 0 0.2rem rgba(163, 217, 119, 0.4);
+}
+
+/* Base */
+.btn-comando {
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Editar */
+.btn-editar {
+  background-color: #4caf50;
+}
+.btn-editar:hover {
+  background-color: #388e3c;
+  transform: scale(1.05);
+}
+
+/* Eliminar */
+.btn-eliminar {
+  background-color: #f44336;
+}
+.btn-eliminar:hover {
+  background-color: #c62828;
+  transform: scale(1.05);
+}
+
+/* Publicar (usa clase original) */
+.btn-comando:hover {
+  background-color: #5aa32e;
+  transform: scale(1.05);
+}
+
+.image-carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.image-carousel img {
+  height: 200px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease;
+}
+
+.image-carousel img:hover {
+  transform: scale(1.05);
+}
+
+/* Animación general de entrada */
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

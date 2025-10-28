@@ -1,0 +1,89 @@
+<% /* views/anuncios.ejs */ %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+  body {
+    background-image: url('/images/fondo_verde.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .form-panel-admin {
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 10px;
+  }
+
+  .btn-comando {
+    background-color: #6dbf3f;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    padding: 10px 18px;
+  }
+
+  .btn-comando:hover {
+    background-color: #5aa32e;
+    transform: scale(1.05);
+  }
+
+  .imagen-anuncio {
+    max-height: 180px;
+    border-radius: 10px;
+    margin-top: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+</style>
+
+<div class="container py-5">
+  <h2 class="mb-4 text-center">Gestionar Anuncio de Carga</h2>
+
+  <!-- Formulario para subir anuncio -->
+  <div class="card shadow-sm form-panel-admin mb-5">
+    <div class="card-header bg-success text-white">
+      <strong>Formulario del Anuncio</strong>
+    </div>
+    <div class="card-body">
+      <form action="/admin/anuncios" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="titulo" class="form-label">Título del anuncio</label>
+          <input type="text" class="form-control" name="titulo" id="titulo" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="imagen" class="form-label">Imagen del anuncio</label>
+          <input type="file" class="form-control" name="imagen" id="imagen" accept="image/*" required>
+        </div>
+
+        <button type="submit" class="btn btn-comando animate__animated animate__pulse animate__infinite">
+          Publicar Anuncio
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <% if (anuncio) { %>
+    <div class="card form-panel-admin shadow-sm p-4 text-center">
+      <h4>Anuncio actual</h4>
+      <p class="mt-2"><strong><%= anuncio.titulo %></strong></p>
+      <img src="<%= anuncio.imagen %>" alt="Imagen del anuncio" class="imagen-anuncio img-fluid">
+    </div>
+  <% } %>
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Mostrar mensaje si se publicó -->
+<script>
+  <% if (typeof publicado !== 'undefined' && publicado) { %>
+    Swal.fire({
+      icon: 'success',
+      title: '¡Anuncio publicado!',
+      showConfirmButton: false,
+      timer: 1800
+    });
+  <% } %>
+</script>

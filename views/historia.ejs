@@ -1,0 +1,184 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<main class="container pdf-container">
+  <!-- Botón de descarga -->
+  <div class="d-flex justify-content-end mb-3">
+    <a href="/documents/historia.pdf" download 
+       class="btn btn-descarga animate__animated animate__pulse animate__infinite">
+      Descargar PDF
+    </a>
+  </div>
+
+  <!-- Contenedor del visor de imágenes -->
+  <div class="visor-imagen text-center">
+    <img id="imagen-actual" src="/images/Pagina1.png" alt="Página 1" 
+         class="img-fluid imagen-historia rounded shadow">
+
+    <div class="mt-3">
+      <button id="anterior" class="btn btn-comando me-2 animate__animated animate__pulse">
+        ⬅ Anterior
+      </button>
+      <button id="siguiente" class="btn btn-comando animate__animated animate__pulse">
+        Siguiente ➡
+      </button>
+      <p class="mt-2" id="contador-pagina">Página 1 de X</p>
+    </div>
+  </div>
+</main>
+
+<style>
+/* 🔹 Fondo estándar */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url('/images/fondo_verde.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat-y;
+  background-attachment: fixed;
+  padding-top: 40px; /* 👈 espacio para que el navbar no tape nada */
+}
+
+/* 🔹 Contenedor PDF */
+.pdf-container {
+  width: 100%;
+  height: 90vh;
+  padding: 20px;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+}
+
+/* 🔹 Visor */
+.visor-imagen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.imagen-historia {
+  max-height: 75vh;
+  object-fit: contain;
+  border: 4px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  background: rgba(0,0,0,0.1);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+
+/* 🔹 Botones de navegación */
+.btn-comando {
+  background-color: #3f48bf; /* Azul comando */
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 80, 0.3);
+}
+
+.btn-comando:hover {
+  background-color: #2330e0;
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px rgba(0, 0, 80, 0.4);
+}
+
+.btn-comando:disabled {
+  background-color: #9e9e9e;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 🔹 Botón de descarga */
+.btn-descarga {
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 25px;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #29f1f1, #2446dd);
+  color: #fff;
+  border: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+}
+
+.btn-descarga:hover {
+  background: linear-gradient(135deg, #2446dd, #29f1f1);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+</style>
+
+<script>
+  const imagenes = [
+    "/images/Pagina1.png",
+    "/images/Pagina2.png",
+    "/images/Pagina3.png",
+    "/images/Pagina4.png",
+    "/images/Pagina5.png",
+    "/images/Pagina6.png",
+    "/images/Pagina7.png",
+    "/images/Pagina8.png",
+    "/images/Pagina9.png",
+    "/images/Pagina10.png",
+    "/images/Pagina11.png"
+  ];
+
+  let indiceActual = 0;
+
+  const imagenActual = document.getElementById("imagen-actual");
+  const btnAnterior = document.getElementById("anterior");
+  const btnSiguiente = document.getElementById("siguiente");
+  const contadorPagina = document.getElementById("contador-pagina");
+
+  function actualizarImagen() {
+    imagenActual.src = imagenes[indiceActual];
+    imagenActual.alt = `Página ${indiceActual + 1}`;
+    contadorPagina.textContent = `Página ${indiceActual + 1} de ${imagenes.length}`;
+
+    btnAnterior.disabled = indiceActual === 0;
+    btnSiguiente.disabled = indiceActual === imagenes.length - 1;
+  }
+
+  btnAnterior.addEventListener("click", () => {
+    if (indiceActual > 0) {
+      indiceActual--;
+      actualizarImagen();
+    }
+  });
+
+  btnSiguiente.addEventListener("click", () => {
+    if (indiceActual < imagenes.length - 1) {
+      indiceActual++;
+      actualizarImagen();
+    }
+  });
+
+  actualizarImagen();
+</script>
+<audio id="audioBrigada" src="/audio/cuarta_brigada.mp3" loop></audio>
+
+<script>
+  const audioBrigada = document.getElementById("audioBrigada");
+
+  // Reproducir al cargar la página
+  window.addEventListener("load", () => {
+    audioBrigada.currentTime = 0;
+    audioBrigada.play().catch(err => {
+      console.warn("El navegador bloqueó la reproducción automática:", err);
+    });
+  });
+
+  // Detener cuando el usuario salga de la vista
+  window.addEventListener("beforeunload", () => {
+    audioBrigada.pause();
+    audioBrigada.currentTime = 0;
+  });
+</script>
+

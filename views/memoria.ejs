@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Juego de Memoria - Equipo Militar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      background: url('/images-requisitos/fondomemoria.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Press Start 2P', cursive;
+      color: #000;
+    }
+    .game-board {
+  display: grid;
+  grid-template-columns: repeat(6, 120px);
+  grid-gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+    .card {
+      width: 120px;
+      height: 150px;
+      perspective: 1000px;
+      cursor: pointer;
+      animation: bounce 2s infinite alternate;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      border: 2px solid #000;
+    }
+    .card-front {
+  background: linear-gradient(135deg, #ffcc70, #ff8177);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 48px;
+  color: #000;
+  text-shadow: 2px 2px #fff, -2px -2px #fff;
+  border-radius: 12px;
+  border: 3px solid #000;
+}
+
+    .card-back {
+      transform: rotateY(180deg);
+      background-size: cover;
+      background-position: center;
+    }
+    .stats {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    #startBtn {
+      display: block;
+      margin: 20px auto;
+      font-family: 'Press Start 2P', cursive;
+    }
+    /* Animaciones */
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-6px); }
+    }
+    .card.matched .card-inner {
+      animation: glow 1s ease-in-out 2;
+    }
+    @keyframes glow {
+      0%   { box-shadow: 0 0 10px gold; }
+      50%  { box-shadow: 0 0 20px yellow; }
+      100% { box-shadow: 0 0 10px gold; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container text-center mt-4">
+    <h1 class="fw-bold">🎖️ Juego de Memoria: Equipo Militar</h1>
+    <p>Encuentra todas las parejas del equipo que porta un soldado de Guatemala lo más rápido posible.</p>
+    <button id="startBtn" class="btn btn-success">Iniciar Juego</button>
+    <div class="stats">
+      ⏱ Tiempo: <span id="time">0</span> seg | Puntos: <span id="score">0</span>/12
+    </div>
+    <div id="gameBoard" class="game-board"></div>
+    <div class="mt-4">
+    <a href="/minigame" class="btn btn-warning">Volver a menú de Juegos</a>
+  </div>
+</div>
+  </div>
+
+  <!-- ... tu HTML igualito hasta antes de cerrar el body ... -->
+
+<script>
+const board = document.getElementById('gameBoard');
+const scoreEl = document.getElementById('score');
+const timeEl = document.getElementById('time');
+const startBtn = document.getElementById('startBtn');
+
+let cards = [];
+let flipped = [];
+let matched = 0;
+let score = 0;
+let timer = null;
+let seconds = 0;
+
+// ✅ Recuperar última partida
+window.addEventListener('load', () => {
+  const lastScore = localStorage.getItem('memoria_puntos');
+  const lastTime = localStorage.getItem('memoria_tiempo');
+  if (lastScore && lastTime) {
+    Swal.fire({
+      title: '📜 Último resultado',
+      html: `Puntos: <b>${lastScore}/12</b><br>Tiempo: <b>${lastTime} seg</b>`,
+      icon: 'info',
+      confirmButtonText: 'Entendido'
+    });
+  }
+});
+
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+function startGame() {
+  board.innerHTML = "";
+  score = 0;
+  matched = 0;
+  seconds = 0;
+  timeEl.textContent = "0";
+  scoreEl.textContent = "0";
+
+  // Generar 2 de cada carta
+  cards = [];
+  for (let i = 1; i <= 12; i++) {
+    cards.push({ id: i, img: `/images/memoria/ejer${i}.png` });
+    cards.push({ id: i, img: `/images/memoria/ejer${i}.png` });
+  }
+
+  cards = shuffle(cards);
+
+  cards.forEach(card => {
+    const cardEl = document.createElement('div');
+    cardEl.classList.add('card');
+    cardEl.dataset.id = card.id;
+    cardEl.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front">?</div>
+        <div class="card-back" style="background-image:url('${card.img}')"></div>
+      </div>
+    `;
+    cardEl.addEventListener('click', () => flipCard(cardEl));
+    board.appendChild(cardEl);
+  });
+
+  document.querySelectorAll('.card').forEach(c => c.classList.add('flipped'));
+  setTimeout(() => {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('flipped'));
+    startTimer();
+  }, 3000);
+}
+
+function startTimer() {
+  if (timer) clearInterval(timer);
+  timer = setInterval(() => {
+    seconds++;
+    timeEl.textContent = seconds;
+  }, 1000);
+}
+
+function flipCard(cardEl) {
+  if (cardEl.classList.contains('flipped') || flipped.length === 2) return;
+
+  cardEl.classList.add('flipped');
+  flipped.push(cardEl);
+
+  // 🔊 sonido al voltear carta
+  new Audio('/audio/voltearcarta.mp3').play();
+
+  if (flipped.length === 2) {
+    checkMatch();
+  }
+}
+
+function checkMatch() {
+  const [c1, c2] = flipped;
+  if (c1.dataset.id === c2.dataset.id) {
+    score++;
+    matched++;
+    scoreEl.textContent = score;
+
+    c1.classList.add("matched");
+    c2.classList.add("matched");
+
+    // 🔊 sonido de pareja correcta
+    new Audio('/audio/pareja.mp3').play();
+
+    Swal.fire({
+      title: '🎉 ¡Pareja encontrada!',
+      text: `Llevas ${score}/12 puntos`,
+      icon: 'success',
+      toast: true,
+      position: 'top',
+      timer: 1500,
+      showConfirmButton: false
+    });
+
+    flipped = [];
+    if (matched === 12) {
+  clearInterval(timer);
+
+  // 👉 Guardar en localStorage
+  localStorage.setItem('memoria_puntos', score);
+  localStorage.setItem('memoria_tiempo', seconds);
+
+  // 👉 Guardar resultado en la base de datos
+  fetch('/guardar-resultado', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      juego: 'Juego de Memoria',
+      puntaje: score,
+      tiempo: seconds
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.ok) {
+      console.log("✅ Resultado guardado en la BD");
+    } else {
+      console.error("❌ Error al guardar resultado", data.error);
+    }
+  })
+  .catch(err => console.error("⚠️ Error de red al guardar resultado:", err));
+
+  // 🔊 audios de victoria
+  new Audio('/audio/victoria.mp3').play();
+  new Audio('/audio/ejercito.mp3').play();
+
+  // 🎉 confeti
+  lanzarConfeti();
+
+  // ❤️ corazones flotando
+  lanzarCorazones();
+
+  setTimeout(() => {
+    Swal.fire({
+      title: '🏆 ¡Victoria!',
+      html: `
+        <p>Completaste todo en <b>${seconds} segundos</b></p>
+        <img src="/images/memoria/soldadoequipo.png" alt="Soldado con equipo" 
+             style="width:150px; margin-top:10px;">
+        <p style="margin-top:12px; font-size:14px; color:#000; font-weight:bold;">
+          Ahora conoces el equipo que debe portar un soldado para efectuar operaciones. 
+          💪 ¡Disciplina y honor siempre!
+        </p>
+      `,
+      icon: 'success',
+      confirmButtonText: '¡Genial!'
+    });
+  }, 500);
+}
+
+
+  } else {
+    setTimeout(() => {
+      c1.classList.remove('flipped');
+      c2.classList.remove('flipped');
+      flipped = [];
+    }, 1000);
+  }
+}
+
+// 🎉 Confeti animado
+function lanzarConfeti() {
+  const confettiContainer = document.createElement("div");
+  confettiContainer.style.position = "fixed";
+  confettiContainer.style.top = "0";
+  confettiContainer.style.left = "0";
+  confettiContainer.style.width = "100%";
+  confettiContainer.style.height = "100%";
+  confettiContainer.style.pointerEvents = "none";
+  confettiContainer.style.zIndex = "9999";
+  document.body.appendChild(confettiContainer);
+
+  for (let i = 0; i < 150; i++) {
+    const confeti = document.createElement("div");
+    confeti.style.position = "absolute";
+    confeti.style.width = "8px";
+    confeti.style.height = "14px";
+    confeti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+    confeti.style.top = "-20px";
+    confeti.style.left = Math.random() * window.innerWidth + "px";
+    confeti.style.opacity = 0.8;
+    confeti.style.transform = `rotate(${Math.random() * 360}deg)`;
+    confeti.style.animation = `caer ${2 + Math.random() * 3}s linear forwards`;
+    confettiContainer.appendChild(confeti);
+  }
+
+  setTimeout(() => confettiContainer.remove(), 4000);
+}
+
+function lanzarCorazones() {
+  for (let i = 0; i < 20; i++) {
+    const heart = document.createElement("div");
+    heart.textContent = "❤️";
+    heart.style.position = "fixed";
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.style.bottom = "-20px";
+    heart.style.fontSize = Math.random() * 30 + 20 + "px";
+    heart.style.opacity = 0.9;
+    heart.style.animation = `subir ${3 + Math.random() * 2}s ease-out forwards`;
+    heart.style.zIndex = "9999";
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 5000);
+  }
+}
+
+// 🔑 Animaciones CSS
+const style = document.createElement("style");
+style.innerHTML = `
+@keyframes caer {
+  to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+@keyframes subir {
+  to { transform: translateY(-100vh); opacity: 0; }
+}`;
+document.head.appendChild(style);
+
+startBtn.addEventListener('click', startGame);
+</script>
+</body>
+</html>

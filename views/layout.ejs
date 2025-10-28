@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof title !== 'undefined' ? title : 'Sistema PG1' %></title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <!-- Tu CSS personalizado -->
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #7ec6e2 0%, #262fa7 100%);
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 70px; /* evita que el navbar tape el contenido */
+    }
+
+    .navbar-personalizado {
+      background-color: #3f3dbb;
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-navbar {
+      background-color: white !important;
+      color: black !important;   /* 👈 letras negras */
+      font-weight: 700 !important;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 15px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn-navbar:hover {
+      background-color: #05508d !important;
+      color: white !important;
+      transform: scale(1.05);
+      will-change: transform;
+    }
+
+    .logo-gob {
+      height: 70px;   /* tamaño mediano */
+      width: auto;
+      margin-right: 15px;
+    }
+
+    .form-panel-admin {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    .form-control, .form-select {
+      background-color: #f4fff0;
+      border: 1px solid #c0e6ab;
+      color: #2b2b2b;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: #a3d977;
+      box-shadow: 0 0 0 0.2rem rgba(163, 217, 119, 0.4);
+    }
+
+    .btn-comando {
+      background-color: #6dbf3f;
+      border: none;
+      color: #fff;
+      font-weight: bold;
+      transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn-comando:hover {
+      background-color: #5aa32e;
+    }
+  </style>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<body>
+  <!-- Barra de navegación personalizada -->
+  <nav class="navbar-personalizado fixed-top">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      
+      <!-- Imagen + Botón Inicio -->
+      <div class="d-flex align-items-center">
+        <img src="/images/gob.png" alt="Gobierno" class="logo-gob">
+        <a href="/" class="btn btn-navbar">Inicio</a>
+      </div>
+
+     <!-- Menú derecho -->
+<div class="d-flex align-items-center gap-2">
+  <% const _user = typeof user !== 'undefined' ? user : null; %>
+  <% if (!_user) { %>
+    <a href="/register" class="btn btn-navbar">Registrarse</a>
+  <% } else { %>
+    <% if (_user.rol === 'admin') { %>
+      <!-- 🔹 Admin solo ve su panel -->
+      <a href="/admin" class="btn btn-navbar me-2">Panel Admin</a>
+    <% } else { %>
+      <!-- 🔹 Usuario normal ve sus mensajes -->
+      <a href="/mensajes" class="btn btn-navbar d-flex align-items-center gap-2">
+        <img src="/images/boton_panel/bandejamensajes.png" alt="Mensajes" style="width:22px; height:22px;">
+        Mensajes
+      </a>
+    <% } %>
+
+    <!-- 🔹 Ambos roles ven Cerrar Sesión -->
+    <a href="/logout" class="btn btn-navbar">Cerrar Sesión</a>
+  <% } %>
+</div>
+
+
+    </div>
+  </nav>
+
+  <!-- Contenido dinámico -->
+  <div class="container mt-4">
+    <%- body %>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function notiJustito(msg){
+  Swal.fire({
+    title: '📩 Nuevo mensaje de Justito',
+    text: msg || '¡Tienes un nuevo mensaje!',
+    toast: true,
+    position: 'top',
+    showConfirmButton: false,
+    timer: 3500,
+    timerProgressBar: true,
+    background: '#3704af',
+    color: '#fff',
+    iconHtml: '🪖',
+    customClass:{
+      popup: 'animate__animated animate__fadeInDown'
+    }
+  });
+}
+</script>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

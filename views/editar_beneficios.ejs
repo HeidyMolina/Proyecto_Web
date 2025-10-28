@@ -1,0 +1,151 @@
+<% /* views/editar_beneficios.ejs */ %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+  body {
+    background-image: url('/images/fondo_verde.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: Arial, sans-serif;
+  }
+
+  .form-panel, .beneficios-panel {
+    background: rgba(255, 255, 255, 0.96);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.15);
+    max-width: 950px;
+    margin: 40px auto;
+  }
+
+  .btn-comando {
+    background-color: #6dbf3f;
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 10px 18px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .btn-comando:hover {
+    background-color: #4caf50;
+    transform: scale(1.05);
+  }
+
+  .beneficio-card {
+    background-color: #e9f5e5;
+    border-radius: 20px;
+    text-align: center;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease-in-out;
+    height: 100%;
+  }
+
+  .beneficio-card:hover {
+    transform: scale(1.03);
+  }
+
+  .beneficio-card img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    background: white;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .beneficio-card .texto {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1b3c20;
+  }
+</style>
+
+<!-- Panel para agregar beneficio -->
+<div class="form-panel animate__animated animate__fadeIn">
+  <h2 class="text-center mb-4">Agregar Beneficio</h2>
+  <form action="/admin/editor/beneficios/agregar" method="POST" enctype="multipart/form-data">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-5">
+        <label class="form-label">Imagen del beneficio</label>
+        <input type="file" name="imagen" accept="image/*" class="form-control" required>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">Descripción</label>
+        <input type="text" name="texto" class="form-control" placeholder="Ej: Servicio médico..." required>
+      </div>
+      <div class="col-md-2 text-center">
+        <button type="submit" class="btn btn-comando w-100">Agregar</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Lista de beneficios existentes -->
+<div class="beneficios-panel animate__animated animate__fadeInUp">
+  <h4 class="text-center mb-4">Beneficios existentes</h4>
+
+  <% if (beneficios.length === 0) { %>
+    <p class="text-center text-muted">No hay beneficios registrados aún.</p>
+  <% } else { %>
+    <div class="row g-4">
+      <% beneficios.forEach(ben => { %>
+        <div class="col-sm-6 col-md-4">
+          <div class="beneficio-card h-100">
+            <img src="<%= ben.imagen %>" alt="Icono beneficio">
+            <div class="texto mb-2"><%= ben.texto %></div>
+            <form action="/admin/beneficios/eliminar/<%= ben.id %>" method="POST" onsubmit="return confirm('¿Eliminar este beneficio?')">
+              <button type="submit" class="btn btn-danger btn-sm mt-2">Eliminar</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  <% if (typeof agregado !== 'undefined' && agregado) { %>
+    Swal.fire({
+      icon: 'success',
+      title: '¡Beneficio agregado!',
+      showConfirmButton: false,
+      timer: 1800
+    });
+  <% } %>
+</script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  <% if (typeof actualizado !== 'undefined' && actualizado) { %>
+    Swal.fire({
+      icon: 'success',
+      title: '¡Editado correctamente!',
+      showConfirmButton: false,
+      timer: 1800
+    });
+  <% } else if (typeof agregado !== 'undefined' && agregado) { %>
+    Swal.fire({
+      icon: 'success',
+      title: '¡Agregado correctamente!',
+      showConfirmButton: false,
+      timer: 1800
+    });
+  <% } else if (typeof eliminado !== 'undefined' && eliminado) { %>
+    Swal.fire({
+      icon: 'success',
+      title: '¡Beneficio eliminado!',
+      showConfirmButton: false,
+      timer: 1800
+    });
+  <% } %>
+</script>
