@@ -5,7 +5,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap" rel="stylesheet">
-
 <style>
   body {
     background: url('/images/boton_panel/mensajes.png') no-repeat center center fixed;
@@ -27,45 +26,42 @@
 
   .chat-wrap { display:flex; gap:16px; }
   .sidebar {
-    width: 260px; min-width:260px;
+    width: 260px;
+    min-width:260px;
     background: rgba(0,0,0,0.6);
-    border-radius: 16px; padding: 16px; box-shadow: 0 10px 25px rgba(0,0,0,.3);
-    height: fit-content; position: sticky; top: 16px;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.3);
+    height: fit-content;
+    position: sticky;
+    top: 16px;
     font-size: 0.7rem;
     text-transform: uppercase;
   }
-  .sidebar a {
-    font-family: 'Press Start 2P';
-  }
+  .sidebar a { font-family: 'Press Start 2P'; }
 
   .timeline { flex:1; }
 
-
-  .status-badge {
-    font-size: 0.6rem;
-    padding: 3px 6px;
-    border-radius: 10px;
-    background: #000;
+  .msg {
+    max-width: 680px;
+    border-radius: 20px;
+    padding: 14px 16px;
+    position: relative;
+    font-size: 0.8rem;
+    font-family: 'Press Start 2P', cursive, monospace;
+    animation: fadeInUp 0.6s ease;
+    border: 2px solid #fff;
+    box-shadow: 0 0 15px rgba(255,255,255,0.4);
+    margin-bottom: 1rem;
+    word-wrap: break-word;
+    overflow: hidden;
+  }
+  .msg.usuario {
+    margin-left: auto;
+    background: linear-gradient(135deg, #00f7ff, #3704af);
     color: #fff;
-    border: 1px solid #fff;
   }
-
-  .react-btn {
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: transform 0.2s ease;
-  }
-  .react-btn:hover {
-    transform: scale(1.3) rotate(-10deg);
-  }
-
-  .fav {
-    cursor: pointer;
-    font-size: 1.4rem;
-    color: gold;
-    text-shadow: 0 0 8px rgba(255,215,0,0.8);
-  }
-  .fav.off { color: #666; }
+  .msg.admin { background: #fff; color: #000; }
 
   .send-card {
     background: rgba(0,0,0,0.7);
@@ -74,229 +70,112 @@
     padding: 15px;
     box-shadow: 0 0 20px rgba(41,241,241,0.6);
   }
-  .form-label {
-    color: #ffeb3b;
-    font-size: 0.7rem;
-  }
-  .btn-info {
-    background: linear-gradient(135deg, #ff00cc, #3333ff);
-    color: #fff;
-    border: none;
-    font-weight: bold;
-    text-transform: uppercase;
-    box-shadow: 0 0 15px rgba(255,0,204,0.7);
-  }
-  .btn-info:hover {
-    background: linear-gradient(135deg, #3333ff, #ff00cc);
-    transform: scale(1.05);
+
+  .saludo-img {
+    max-width: 350px;
+    filter: drop-shadow(0 0 15px rgba(0,0,0,0.5));
+    animation: bounceIn 1.5s ease;
   }
 
-  /* Animaciones */
-  .animacion-reaccion span {
+  .globo-dialogo {
+    max-width: 600px;
+    background: #fff;
+    color: #000;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    padding: 25px;
+    border-radius: 25px;
+    position: relative;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    animation: pulse 2s infinite;
+  }
+
+  .globo-dialogo::before {
+    content: "";
     position: absolute;
-    font-size: 1.5rem;
-    opacity: 0;
-    animation: flotar 1.2s ease forwards;
-  }
-  @keyframes flotar {
-    0% { transform: translateY(20px) scale(0.8); opacity: 0; }
-    30% { transform: translateY(-10px) scale(1.2); opacity: 1; }
-    100% { transform: translateY(-60px) scale(0.8); opacity: 0; }
+    left: -20px;
+    top: 50px;
+    border-width: 12px;
+    border-style: solid;
+    border-color: transparent #fff transparent transparent;
   }
 
-  .vibrar { animation: vibrar .4s ease; }
-  @keyframes vibrar {
-    0% { transform: translateX(0); }
-    20% { transform: translateX(-3px); }
-    40% { transform: translateX(3px); }
-    60% { transform: translateX(-3px); }
-    80% { transform: translateX(3px); }
-    100% { transform: translateX(0); }
+  @keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 15px rgba(41,241,241,0.6); }
+    50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(36,70,221,0.8); }
+    100% { transform: scale(1); box-shadow: 0 0 15px rgba(41,241,241,0.6); }
   }
 
-/* ===== ESTILO UNIFICADO TIPO BANDEJA DE MENSAJES ===== */
-.msg {
-  max-width: 680px;
-  border-radius: 20px;
-  padding: 14px 16px;
-  position: relative;
-  font-size: 0.8rem;
-  font-family: 'Press Start 2P', cursive, monospace;
-  animation: fadeInUp 0.6s ease;
-  border: 2px solid #fff;
-  box-shadow: 0 0 15px rgba(255,255,255,0.4);
-  margin-bottom: 1rem;
-  word-wrap: break-word;
-  overflow: hidden;
-}
+  /* 📱 ESTILOS RESPONSIVE (sin alterar laptop o escritorio) */
+  @media (max-width: 768px) {
+    body {
+      background-attachment: scroll;
+      font-size: 14px;
+    }
 
-/* Usuario normal → igual a .mine */
-.msg.usuario {
-  margin-left: auto;
-  background: linear-gradient(135deg, #00f7ff, #3704af);
-  color: #fff;
-}
+    .chat-wrap {
+      flex-direction: column;
+      gap: 10px;
+    }
 
-/* Admin → igual a .admin */
-.msg.admin { 
-  background: #fff; 
-  color: #000; 
-}
+    .sidebar {
+      width: 100%;
+      position: relative;
+      top: auto;
+      order: 2;
+    }
 
-/* Estado */
-.status-badge {
-  font-size: 0.6rem;
-  padding: 3px 6px;
-  border-radius: 10px;
-  background: #000;
-  color: #fff;
-  border: 1px solid #fff;
-}
+    .timeline { order: 1; }
 
-/* Imagen dentro del mensaje */
-.msg img {
-  max-width: 200px;
-  border-radius: 12px;
-  margin-top: .4rem;
-  box-shadow: 0 6px 14px rgba(0,0,0,.15);
-}
+    h2 {
+      font-size: 1rem;
+      padding: 10px;
+    }
 
-/* Animaciones */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    textarea, button, .form-control {
+      font-size: 0.9rem;
+    }
 
-.vibrar { animation: vibrar .4s ease; }
-@keyframes vibrar {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-3px); }
-  40% { transform: translateX(3px); }
-  60% { transform: translateX(-3px); }
-  80% { transform: translateX(3px); }
-  100% { transform: translateX(0); }
-}
+    .msg {
+      font-size: 0.75rem;
+      padding: 10px;
+    }
 
-/* Reacciones flotantes */
-.animacion-reaccion span {
-  position: absolute;
-  font-size: 1.5rem;
-  opacity: 0;
-  animation: flotar 1.2s ease forwards;
-}
-@keyframes flotar {
-  0% { transform: translateY(20px) scale(0.8); opacity: 0; }
-  30% { transform: translateY(-10px) scale(1.2); opacity: 1; }
-  100% { transform: translateY(-60px) scale(0.8); opacity: 0; }
-}
+    .btn {
+      font-size: 0.8rem;
+      padding: 8px 10px;
+    }
 
-/* Emoji grande fijo */
-.reaccion-destacada {
-  position: absolute;
-  bottom: 8px;
-  right: 12px;
-  font-size: 2.8rem;
-  opacity: 0.95;
-  pointer-events: none;
-  animation: pop 0.4s ease;
-}
-@keyframes pop {
-  0% { transform: scale(0.3); opacity: 0; }
-  70% { transform: scale(1.3); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.95; }
-}
+    /* 🔹 Bloque del saludo (soldadito + globo) adaptado */
+    .d-flex.justify-content-center.align-items-center.gap-4.my-4 {
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
 
-/* Estilo retro como tu mini-juego */
-.swal2-popup{
-  font-family:'Press Start 2P', cursive, monospace;
-  border-radius:18px;
-  background:linear-gradient(135deg,#3b82f6,#9333ea);
-  color:#fff;
-  box-shadow:0 14px 30px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.25);
-}
-.swal2-title{ text-shadow:0 2px 0 rgba(0,0,0,.25); }
-.swal2-html-container{ color:#eaf2ff; opacity:.95; }
-.swal2-confirm, .swal2-cancel{
-  font-family:'Press Start 2P', cursive, monospace;
-  border-radius:12px !important;
-  box-shadow:0 6px 0 rgba(0,0,0,.25);
-}
-.swal2-confirm{ background:#22c55e !important; }
-.swal2-cancel{ background:#ef4444 !important; }
+    .saludo-img {
+      max-width: 130px !important;
+      margin: 0 auto;
+      display: block;
+      animation: zoomInMobile 1.2s ease;
+    }
 
-.globo-dialogo {
-  max-width: 500px;
-  background: linear-gradient(135deg, #29f1f1, #2446dd);
-  color: #fff;
-  font-family: 'Press Start 2P', cursive, monospace;
-  font-size: 0.75rem;
-  padding: 20px;
-  border-radius: 20px;
-  position: relative;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-  animation: pulse 2s infinite;
-  border: 3px solid #fff; /* 🟢 marco blanco estilo cómic */
-}
+    .globo-dialogo {
+      max-width: 90%;
+      font-size: 0.85rem;
+      padding: 12px 15px;
+      line-height: 1.4;
+      border-radius: 16px;
+      margin: 0 auto;
+    }
 
-</style>
-
-<!-- Bloque de saludo con Justito -->
-<div class="d-flex justify-content-center align-items-center gap-4 my-4 animate__animated animate__fadeIn">
-  <!-- Imagen del soldadito -->
-  <div class="soldado-saludo">
-    <img src="/images/saludo2.png" alt="Saludo Justito" class="img-fluid saludo-img">
-  </div>
-
-  <!-- Globo de diálogo -->
-  <div class="globo-dialogo">
-    <p>
-      Hola <strong><%= user.nombre %></strong>, ¡qué alegría recibir tu visita!😊<br>
-      Me encantaría conocer tu opinión sobre lo que viste aquí y poder resolver cualquier duda que tengas. <br>
-      Escríbeme un mensaje y con gusto te responderé lo más pronto posible. 🥰 
-    </p>
-  </div>
-</div>
-
-<style>
-/* Imagen del soldado más grande */
-.saludo-img {
-  max-width: 350px; /* tamaño aumentado */
-  filter: drop-shadow(0 0 15px rgba(0,0,0,0.5));
-  animation: bounceIn 1.5s ease;
-}
-
-/* Globo de diálogo más grande y letras negras */
-.globo-dialogo {
-  max-width: 600px;
-  background: #fff;
-  color: #000; /* texto negro */
-  font-family: 'Baloo 2', cursive; /* nueva fuente amigable */
-  font-size: 1.1rem; /* más grande */
-  line-height: 1.6;
-  padding: 25px;
-  border-radius: 25px;
-  position: relative;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-  animation: pulse 2s infinite;
-}
-
-/* Triangulito del globo */
-.globo-dialogo::before {
-  content: "";
-  position: absolute;
-  left: -20px;
-  top: 50px;
-  border-width: 12px;
-  border-style: solid;
-  border-color: transparent #fff transparent transparent;
-}
-
-/* Animaciones */
-@keyframes pulse {
-  0% { transform: scale(1); box-shadow: 0 0 15px rgba(41,241,241,0.6); }
-  50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(36,70,221,0.8); }
-  100% { transform: scale(1); box-shadow: 0 0 15px rgba(41,241,241,0.6); }
-}
+    @keyframes zoomInMobile {
+      0% { transform: scale(0.7) rotate(-3deg); opacity: 0; }
+      60% { transform: scale(1.05) rotate(2deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+  }
 </style>
 
 
@@ -757,6 +636,7 @@ function notiJustito(msg){
   });
 }
 
+
 </script>
 
 <script>
@@ -788,4 +668,7 @@ async function editarRespuesta(id){
     Swal.fire({ title:'Error', text:'No se pudo guardar', icon:'error' });
   }
 }
+
 </script>
+
+
