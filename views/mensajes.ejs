@@ -228,7 +228,7 @@
 
   <div class="globo-dialogo">
     <p>
-      Hola <%= nombreUsuario %>,<br>
+      Hola <%= user?.nombre || 'Soldado' %>,
       ¡qué alegría recibir tu visita! 😊<br>
       Me encantaría conocer tu opinión sobre lo que viste aquí y resolver cualquier duda que tengas.<br>
       Escríbeme un mensaje y con gusto te responderé lo más pronto posible. 🥰
@@ -249,17 +249,72 @@
     </form>
   </div>
 
-  <!-- 💬 BLOQUE DE MENSAJES ACTUALIZADO -->
-<div class="chat-wrap row justify-content-center mt-4">
-  <!-- 🗂️ CATEGORÍAS -->
-  <aside class="sidebar col-12 col-lg-3 mb-4">
-    <h6 class="mb-3 text-center">📂 Categorías</h6>
-    <div class="d-grid gap-2">
-      <a class="btn btn-outline-primary" href="/mensajes">Mis mensajes</a>
-      <a class="btn btn-outline-warning" href="/mensajes?f=favoritos">Favoritos ⭐</a>
-    </div>
-  </aside>
 
+
+<style>
+  /* 📱 ESTILOS RESPONSIVE */
+  @media (max-width: 768px) {
+    body {
+      background-attachment: scroll;
+      font-size: 14px;
+    }
+
+    /* 🔹 Contenedor del saludo */
+    .saludo-soldado {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+
+    /* 🔹 Imagen del soldadito */
+    .saludo-img {
+      max-width: 130px !important;
+      margin: 0 auto 8px auto;
+      display: block;
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+      animation: zoomInMobile 1.2s ease, waveSoldado 2.4s ease-in-out infinite;
+    }
+
+    /* 🔹 Globo de diálogo */
+    .globo-dialogo {
+      max-width: 92%;
+      font-size: 0.9rem;
+      padding: 12px 16px;
+      border-radius: 16px;
+      line-height: 1.4;
+      margin: 0 auto;
+      background: #fff;
+      color: #000;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      animation: fadeInGlobo 1.5s ease;
+    }
+
+    /* ✨ Animaciones */
+    @keyframes zoomInMobile {
+      0% { transform: scale(0.7) rotate(-3deg); opacity: 0; }
+      60% { transform: scale(1.05) rotate(2deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    @keyframes fadeInGlobo {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 👋 Movimiento de saludo */
+    @keyframes waveSoldado {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(4deg); }
+      50% { transform: rotate(-4deg); }
+      75% { transform: rotate(3deg); }
+    }
+  }
+</style>
+
+
+  <div class="container my-4">
+  <h2>BANDEJA DE MENSAJES</h2>
   <!-- 💌 LISTADO DE MENSAJES -->
   <section class="timeline col-12 col-lg-8">
     <% if (mensajes && mensajes.length) { %>
