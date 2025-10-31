@@ -215,37 +215,28 @@
       60% { transform: scale(1.05) rotate(2deg); opacity: 1; }
       100% { transform: scale(1) rotate(0deg); opacity: 1; }
     }
-
-    .d-flex.justify-content-center.align-items-center.gap-4.my-4 {
-  position: relative;
-  z-index: 10;
-}
-
   }
 </style>
 
-  
-  <!-- Soldadito saludando con diálogo -->
-  <div class="d-flex justify-content-center align-items-center gap-4 my-4 animate__animated animate__fadeInDown" 
-       style="flex-wrap: wrap;">
-    <img src="/images/saludo2.png" 
-         alt="Soldadito saludando" 
-         class="saludo-img"
-         style="max-width: 230px; height: auto;">
-         
-    <div class="globo-dialogo" style="background-color: #fff; color:#000; max-width: 500px; border-radius: 20px; padding: 20px;">
-      <p>
-        ¡Hola <%= nombreUsuario %>! 👋<br>
-        Soy <b>Justito</b>, tu asistente de la Cuarta Brigada 🇬🇹.<br>
-        Me alegra mucho verte por aquí.<br>
-        Cuéntame tus dudas o comentarios y con gusto te responderé lo más pronto posible 💬✨
-      </p>
-    </div>
-  </div>
 
-<!-- 🔹 CONTENEDOR PRINCIPAL -->
+
 <div class="container my-4">
   <h2>BANDEJA DE MENSAJES</h2>
+  <!-- Soldadito saludando -->
+<section class="saludo-soldado animate__animated animate__fadeInDown my-4 d-flex justify-content-center align-items-center gap-4">
+   <img src="/images/saludo2.png" alt="Soldadito saludando" class="saludo-img">
+
+  <div class="globo-dialogo">
+    <p>
+      Hola <%= nombreUsuario %>,<br>
+      ¡qué alegría recibir tu visita! 😊<br>
+      Me encantaría conocer tu opinión sobre lo que viste aquí y resolver cualquier duda que tengas.<br>
+      Escríbeme un mensaje y con gusto te responderé lo más pronto posible. 🥰
+    </p>
+  </div>
+</section>
+
+
 
   <!-- Formulario de envío -->
   <div class="send-card p-3 mb-4">
@@ -257,8 +248,6 @@
       <button class="btn btn-info w-100 fw-bold" id="btnEnviar">Enviar</button>
     </form>
   </div>
-</div>
-
 
   <!-- 💬 BLOQUE DE MENSAJES ACTUALIZADO -->
 <div class="chat-wrap row justify-content-center mt-4">
