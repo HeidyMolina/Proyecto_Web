@@ -105,11 +105,11 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// —— Configuración de correo ——
+// —— Configuración de correo ——  
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,            // ✅ más estable
-  secure: false,        // ✅ con 587 va en false
+  port: 465,             // ✅ puerto seguro SSL
+  secure: true,          // ✅ con 465 debe ser true
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
@@ -119,13 +119,12 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-
-
+// Verificar conexión SMTP
 transporter.verify((err, success) => {
   if (err) {
-    console.error('❌ Error con SMTP:', err);
+    console.error("❌ Error con SMTP:", err);
   } else {
-    console.log('✅ SMTP listo para enviar correos');
+    console.log("✅ Conexión SMTP exitosa. Listo para enviar correos ✉️");
   }
 });
 
@@ -1962,6 +1961,8 @@ app.post('/admin/eliminar-multiple', (req, res) => {
 
 // ARRANQUE DEL SERVIDOR
 // -----------------------------
+const PORT = process.env.PORT || 80;   // 👈 ahora prioriza el 80
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Servidor corriendo en http://0.0.0.0:${PORT}`);
 });
+
