@@ -95,6 +95,8 @@
     filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.5));
     animation: bounceIn 1.5s ease;
     transition: transform 0.3s ease;
+    transform-origin: bottom center;
+    animation: waveSoldado 2.4s ease-in-out infinite; /* 👋 animación global */
   }
 
   /* 💬 Globo del soldadito */
@@ -128,6 +130,14 @@
     100% { transform: scale(1); box-shadow: 0 0 15px rgba(41,241,241,0.6); }
   }
 
+  /* 👋 Animación suave del saludo */
+  @keyframes waveSoldado {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    50% { transform: rotate(-4deg); }
+    75% { transform: rotate(3deg); }
+  }
+
   /* ⚙️ Versiones grandes (PC) */
   @media (min-width: 769px) {
     .sidebar {
@@ -159,7 +169,7 @@
       display: block;
       margin: 0 auto 8px auto;
       filter: drop-shadow(0 0 10px rgba(0,0,0,0.4));
-      animation: zoomInMobile 1.2s ease;
+      animation: zoomInMobile 1.2s ease, waveSoldado 2.4s ease-in-out infinite;
     }
 
     /* 🔹 Globo más compacto y centrado */
@@ -205,10 +215,35 @@
       60% { transform: scale(1.05) rotate(2deg); opacity: 1; }
       100% { transform: scale(1) rotate(0deg); opacity: 1; }
     }
+
+    .d-flex.justify-content-center.align-items-center.gap-4.my-4 {
+  position: relative;
+  z-index: 10;
+}
+
   }
 </style>
 
+  
+  <!-- Soldadito saludando con diálogo -->
+  <div class="d-flex justify-content-center align-items-center gap-4 my-4 animate__animated animate__fadeInDown" 
+       style="flex-wrap: wrap;">
+    <img src="/images/saludo2.png" 
+         alt="Soldadito saludando" 
+         class="saludo-img"
+         style="max-width: 230px; height: auto;">
+         
+    <div class="globo-dialogo" style="background-color: #fff; color:#000; max-width: 500px; border-radius: 20px; padding: 20px;">
+      <p>
+        ¡Hola <%= nombreUsuario %>! 👋<br>
+        Soy <b>Justito</b>, tu asistente de la Cuarta Brigada 🇬🇹.<br>
+        Me alegra mucho verte por aquí.<br>
+        Cuéntame tus dudas o comentarios y con gusto te responderé lo más pronto posible 💬✨
+      </p>
+    </div>
+  </div>
 
+<!-- 🔹 CONTENEDOR PRINCIPAL -->
 <div class="container my-4">
   <h2>BANDEJA DE MENSAJES</h2>
 
@@ -222,6 +257,8 @@
       <button class="btn btn-info w-100 fw-bold" id="btnEnviar">Enviar</button>
     </form>
   </div>
+</div>
+
 
   <!-- 💬 BLOQUE DE MENSAJES ACTUALIZADO -->
 <div class="chat-wrap row justify-content-center mt-4">
