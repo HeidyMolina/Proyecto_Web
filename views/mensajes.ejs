@@ -313,8 +313,17 @@
 </style>
 
 
-  <div class="container my-4">
-  <h2>BANDEJA DE MENSAJES</h2>
+  <!-- 💬 BLOQUE DE MENSAJES ACTUALIZADO -->
+<div class="chat-wrap row justify-content-center mt-4">
+  <!-- 🗂️ CATEGORÍAS -->
+  <aside class="sidebar col-12 col-lg-3 mb-4">
+    <h6 class="mb-3 text-center">📂 Categorías</h6>
+    <div class="d-grid gap-2">
+      <a class="btn btn-outline-primary fw-bold" href="/mensajes">Mis mensajes</a>
+      <a class="btn btn-outline-warning fw-bold" href="/mensajes?f=favoritos">Favoritos ⭐</a>
+    </div>
+  </aside>
+
   <!-- 💌 LISTADO DE MENSAJES -->
   <section class="timeline col-12 col-lg-8">
     <% if (mensajes && mensajes.length) { %>
@@ -330,7 +339,7 @@
                 </div>
                 <div class="text-muted small"><%= new Date(m.fecha).toLocaleString() %></div>
               </div>
-
+              
               <!-- Estado -->
               <% if (m.enviado_por !== 'admin') { %>
                 <% if (m.estado === 'respondido') { %>
