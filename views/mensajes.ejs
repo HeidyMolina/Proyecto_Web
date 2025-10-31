@@ -56,11 +56,13 @@
     word-wrap: break-word;
     overflow: hidden;
   }
+
   .msg.usuario {
     margin-left: auto;
     background: linear-gradient(135deg, #00f7ff, #3704af);
     color: #fff;
   }
+
   .msg.admin { background: #fff; color: #000; }
 
   .send-card {
@@ -107,67 +109,66 @@
     100% { transform: scale(1); box-shadow: 0 0 15px rgba(41,241,241,0.6); }
   }
 
-  /* 📱 ESTILOS RESPONSIVE (sin alterar laptop o escritorio) */
+  /* 📱 ESTILOS RESPONSIVE - versión mejorada */
   @media (max-width: 768px) {
     body {
       background-attachment: scroll;
       font-size: 14px;
     }
 
+    /* 🔹 Reacomoda el bloque de saludo (soldadito + globo) */
+    .d-flex.justify-content-center.align-items-center.gap-4.my-4 {
+      flex-direction: column;     
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+    }
+
+    /* 🔹 Reduce tamaño del soldadito */
+    .saludo-img {
+      max-width: 150px !important;
+      display: block;
+      margin: 0 auto;
+      filter: drop-shadow(0 0 10px rgba(0,0,0,0.4));
+      animation: zoomInMobile 1.2s ease;
+    }
+
+    /* 🔹 Globo de diálogo más compacto */
+    .globo-dialogo {
+      max-width: 90%;
+      font-size: 0.85rem;
+      padding: 12px 16px;
+      border-radius: 16px;
+      line-height: 1.4;
+      margin: 0 auto;
+    }
+
+    /* 🔹 Hace que los mensajes aparezcan debajo de Categorías */
     .chat-wrap {
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .sidebar {
       width: 100%;
-      position: relative;
-      top: auto;
+      order: 1;
+      margin-bottom: 12px;
+    }
+
+    .timeline {
       order: 2;
     }
 
-    .timeline { order: 1; }
-
-    h2 {
-      font-size: 1rem;
-      padding: 10px;
-    }
-
-    textarea, button, .form-control {
+    /* 🔹 Ajustes generales */
+    textarea,
+    button,
+    .form-control {
       font-size: 0.9rem;
     }
 
     .msg {
       font-size: 0.75rem;
       padding: 10px;
-    }
-
-    .btn {
-      font-size: 0.8rem;
-      padding: 8px 10px;
-    }
-
-    /* 🔹 Bloque del saludo (soldadito + globo) adaptado */
-    .d-flex.justify-content-center.align-items-center.gap-4.my-4 {
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .saludo-img {
-      max-width: 130px !important;
-      margin: 0 auto;
-      display: block;
-      animation: zoomInMobile 1.2s ease;
-    }
-
-    .globo-dialogo {
-      max-width: 90%;
-      font-size: 0.85rem;
-      padding: 12px 15px;
-      line-height: 1.4;
-      border-radius: 16px;
-      margin: 0 auto;
     }
 
     @keyframes zoomInMobile {
@@ -177,6 +178,7 @@
     }
   }
 </style>
+
 
 
 <div class="container my-4">
