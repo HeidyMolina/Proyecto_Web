@@ -24,24 +24,37 @@
     color: #fff;
   }
 
-  .chat-wrap { display:flex; gap:16px; }
+  /* 🔹 Estructura general */
+  .chat-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+
   .sidebar {
     width: 260px;
-    min-width:260px;
-    background: rgba(0,0,0,0.6);
+    min-width: 260px;
+    background: rgba(0, 0, 0, 0.6);
     border-radius: 16px;
     padding: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,.3);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     height: fit-content;
     position: sticky;
     top: 16px;
     font-size: 0.7rem;
     text-transform: uppercase;
   }
-  .sidebar a { font-family: 'Press Start 2P'; }
 
-  .timeline { flex:1; }
+  .sidebar a {
+    font-family: 'Press Start 2P';
+  }
 
+  .timeline {
+    flex: 1;
+  }
+
+  /* 💬 Mensajes */
   .msg {
     max-width: 680px;
     border-radius: 20px;
@@ -63,22 +76,28 @@
     color: #fff;
   }
 
-  .msg.admin { background: #fff; color: #000; }
+  .msg.admin {
+    background: #fff;
+    color: #000;
+  }
 
   .send-card {
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.7);
     border: 2px solid #29f1f1;
     border-radius: 15px;
     padding: 15px;
-    box-shadow: 0 0 20px rgba(41,241,241,0.6);
+    box-shadow: 0 0 20px rgba(41, 241, 241, 0.6);
   }
 
+  /* 🪖 Soldadito */
   .saludo-img {
     max-width: 350px;
-    filter: drop-shadow(0 0 15px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.5));
     animation: bounceIn 1.5s ease;
+    transition: transform 0.3s ease;
   }
 
+  /* 💬 Globo del soldadito */
   .globo-dialogo {
     max-width: 600px;
     background: #fff;
@@ -109,31 +128,41 @@
     100% { transform: scale(1); box-shadow: 0 0 15px rgba(41,241,241,0.6); }
   }
 
-  /* 📱 ESTILOS RESPONSIVE - versión mejorada */
+  /* ⚙️ Versiones grandes (PC) */
+  @media (min-width: 769px) {
+    .sidebar {
+      order: 1;
+    }
+    .timeline {
+      order: 2;
+    }
+  }
+
+  /* 📱 ESTILOS RESPONSIVE */
   @media (max-width: 768px) {
     body {
       background-attachment: scroll;
       font-size: 14px;
     }
 
-    /* 🔹 Reacomoda el bloque de saludo (soldadito + globo) */
+    /* 🔹 Bloque de saludo (soldadito + globo) */
     .d-flex.justify-content-center.align-items-center.gap-4.my-4 {
-      flex-direction: column;     
+      flex-direction: column;
       align-items: center;
       text-align: center;
       gap: 8px;
     }
 
-    /* 🔹 Reduce tamaño del soldadito */
+    /* 🔹 Soldadito más pequeño y centrado */
     .saludo-img {
-      max-width: 150px !important;
+      max-width: 120px !important;
       display: block;
-      margin: 0 auto;
+      margin: 0 auto 8px auto;
       filter: drop-shadow(0 0 10px rgba(0,0,0,0.4));
       animation: zoomInMobile 1.2s ease;
     }
 
-    /* 🔹 Globo de diálogo más compacto */
+    /* 🔹 Globo más compacto y centrado */
     .globo-dialogo {
       max-width: 90%;
       font-size: 0.85rem;
@@ -143,7 +172,7 @@
       margin: 0 auto;
     }
 
-    /* 🔹 Hace que los mensajes aparezcan debajo de Categorías */
+    /* 🔹 Reorganiza categorías y mensajes */
     .chat-wrap {
       flex-direction: column;
       gap: 12px;
@@ -152,18 +181,18 @@
     .sidebar {
       width: 100%;
       order: 1;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .timeline {
       order: 2;
+      width: 100%;
     }
 
-    /* 🔹 Ajustes generales */
-    textarea,
-    button,
-    .form-control {
-      font-size: 0.9rem;
+    /* 🔹 Ajustes de botones y mensajes */
+    .btn {
+      font-size: 0.8rem;
+      padding: 8px 10px;
     }
 
     .msg {
@@ -180,7 +209,6 @@
 </style>
 
 
-
 <div class="container my-4">
   <h2>BANDEJA DE MENSAJES</h2>
 
@@ -195,90 +223,88 @@
     </form>
   </div>
 
-  <div class="chat-wrap">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <h6 class="mb-3">📂 Categorías</h6>
-      <div class="d-grid gap-2">
-        <a class="btn btn-outline-primary" href="/mensajes">Mis mensajes</a>
-        <a class="btn btn-outline-warning" href="/mensajes?f=favoritos">Favoritos ⭐</a>
-      </div>
-    </aside>
+  <!-- 💬 BLOQUE DE MENSAJES ACTUALIZADO -->
+<div class="chat-wrap row justify-content-center mt-4">
+  <!-- 🗂️ CATEGORÍAS -->
+  <aside class="sidebar col-12 col-lg-3 mb-4">
+    <h6 class="mb-3 text-center">📂 Categorías</h6>
+    <div class="d-grid gap-2">
+      <a class="btn btn-outline-primary" href="/mensajes">Mis mensajes</a>
+      <a class="btn btn-outline-warning" href="/mensajes?f=favoritos">Favoritos ⭐</a>
+    </div>
+  </aside>
 
-    <!-- Timeline -->
-<section class="timeline w-100">
-  <% if (mensajes && mensajes.length) { %>
-    <% mensajes.forEach(m => { %>
-      <div class="mb-3">
-        <!-- burbuja -->
-        <div class="msg <%= m.enviado_por==='admin' ? 'admin' : 'usuario' %> animate__animated animate__fadeIn" id="msg-<%= m.id %>">
-          <div class="d-flex justify-content-between align-items-start">
-            <div class="me-2">
-             <div class="fw-bold" style="<%= m.enviado_por !== 'admin' ? 'color:#000;' : '' %>">
-  <%= m.enviado_por === 'admin' ? 'Justito' : (user.nombre + ' ' + user.apellido) %>
-</div>
-<div class="text-muted small"><%= new Date(m.fecha).toLocaleString() %></div>
+  <!-- 💌 LISTADO DE MENSAJES -->
+  <section class="timeline col-12 col-lg-8">
+    <% if (mensajes && mensajes.length) { %>
+      <% mensajes.forEach(m => { %>
+        <div class="mb-3">
+          <div class="msg <%= m.enviado_por==='admin' ? 'admin' : 'usuario' %> animate__animated animate__fadeIn" id="msg-<%= m.id %>">
+            
+            <!-- 🧾 ENCABEZADO MENSAJE -->
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="me-2">
+                <div class="fw-bold" style="<%= m.enviado_por !== 'admin' ? 'color:#000;' : '' %>">
+                  <%= m.enviado_por === 'admin' ? 'Justito' : (user.nombre + ' ' + user.apellido) %>
+                </div>
+                <div class="text-muted small"><%= new Date(m.fecha).toLocaleString() %></div>
+              </div>
 
-            </div>
-            <div>
+              <!-- Estado -->
               <% if (m.enviado_por !== 'admin') { %>
-              <% if (m.estado === 'respondido') { %>
-              <span class="status-badge">Respondido ✅</span>
-              <% } else if (m.estado === 'leido') { %>
-              <span class="status-badge">Leído 👀</span>
-              <% } else { %>
-              <span class="status-badge">Enviado ⏳</span>
+                <% if (m.estado === 'respondido') { %>
+                  <span class="status-badge">Respondido ✅</span>
+                <% } else if (m.estado === 'leido') { %>
+                  <span class="status-badge">Leído 👀</span>
+                <% } else { %>
+                  <span class="status-badge">Enviado ⏳</span>
+                <% } %>
               <% } %>
-              <% } %>
+            </div>
 
+            <!-- 💬 CONTENIDO MENSAJE -->
+            <p class="mt-2 mb-2" id="texto-<%= m.id %>"><%= m.mensaje %></p>
+
+            <% if (m.imagen) { %>
+              <img src="<%= m.imagen %>" alt="imagen" class="mt-2 img-fluid rounded shadow-sm"
+                   style="max-width:200px; cursor:pointer"
+                   onclick="verImagenGrande('<%= m.imagen %>')">
+            <% } %>
+
+            <!-- ✏️ BOTONES USUARIO -->
+            <% if (m.enviado_por !== 'admin') { %>
+              <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-sm btn-outline-primary" onclick="editarMensaje(<%= m.id %>)">Editar</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="eliminarMensaje(<%= m.id %>)">Eliminar</button>
+              </div>
+            <% } %>
+
+            <!-- 🎖️ REACCIONES ADMIN -->
+            <% if (m.enviado_por==='admin') { %>
+              <div class="mt-2 d-flex align-items-center gap-2">
+                <span class="react-btn" onclick="handleReaction(<%= m.id %>, '👍')">👍</span>
+                <span class="react-btn" onclick="handleReaction(<%= m.id %>, '❤️')">❤️</span>
+                <span class="react-btn" onclick="handleReaction(<%= m.id %>, '😂')">😂</span>
+                <span class="react-btn" onclick="handleReaction(<%= m.id %>, '🎖️')">🎖️</span>
+                <span class="fav <%= m.favorito ? '' : 'off' %>"
+                      onclick="toggleFav(<%= m.id %>, <%= m.favorito ? 0 : 1 %>)">★</span>
+              </div>
+            <% } %>
+
+            <!-- ANIMACIONES -->
+            <div class="animacion-reaccion" id="animacion-<%= m.id %>"></div>
+            <div class="reaccion-destacada" id="reaccion-destacada-<%= m.id %>">
+              <%= m.reaccion ? m.reaccion : '' %>
             </div>
           </div>
-
-          <p class="mt-2 mb-2" id="texto-<%= m.id %>"><%= m.mensaje %></p>
-
-          <% if (m.imagen) { %>
-            <img src="<%= m.imagen %>" alt="imagen" class="mt-2 img-fluid rounded shadow-sm"
-                 style="max-width:200px; cursor:pointer"
-                 onclick="verImagenGrande('<%= m.imagen %>')">
-          <% } %>
-
-          <!-- acciones SOLO para mensajes del usuario -->
-          <% if (m.enviado_por !== 'admin') { %>
-            <div class="d-flex align-items-center gap-3">
-              <button class="btn btn-sm btn-outline-primary" onclick="editarMensaje(<%= m.id %>)">Editar</button>
-              <button class="btn btn-sm btn-outline-danger" onclick="eliminarMensaje(<%= m.id %>)">Eliminar</button>
-            </div>
-          <% } %>
-
-          <!-- reacciones SOLO para mensajes del admin -->
-          <% if (m.enviado_por==='admin') { %>
-            <div class="mt-2 d-flex align-items-center gap-2">
-              <span class="react-btn" onclick="handleReaction(<%= m.id %>, '👍')">👍</span>
-              <span class="react-btn" onclick="handleReaction(<%= m.id %>, '❤️')">❤️</span>
-              <span class="react-btn" onclick="handleReaction(<%= m.id %>, '😂')">😂</span>
-              <span class="react-btn" onclick="handleReaction(<%= m.id %>, '🎖️')">🎖️</span>
-
-                           <span class="fav <%= m.favorito ? '' : 'off' %>"
-                    onclick="toggleFav(<%= m.id %>, <%= m.favorito ? 0 : 1 %>)">★</span>
-            </div>
-          <% } %>
-
-          <!-- Contenedor de animación flotante -->
-          <div class="animacion-reaccion" id="animacion-<%= m.id %>"></div>
-
-          <!-- Contenedor fijo para reacción destacada -->
-          <div class="reaccion-destacada" id="reaccion-destacada-<%= m.id %>">
-  <%= m.reaccion ? m.reaccion : '' %>
-</div>
         </div>
-      </div>
-    <% }) %>
-  <% } else { %>
-    <p class="text-center">⚡ No tienes mensajes todavía</p>
-  <% } %>
-</section>
+      <% }) %>
+    <% } else { %>
+      <p class="text-center">⚡ No tienes mensajes todavía</p>
+    <% } %>
+  </section>
+</div>
 
-  </div>
 </div>
 
 
