@@ -18,7 +18,6 @@ const juegosRouter = require('./routes/juegos');
 const db = require('./db');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -1961,8 +1960,9 @@ app.post('/admin/eliminar-multiple', (req, res) => {
 
 // ARRANQUE DEL SERVIDOR
 // -----------------------------
-const PORT = process.env.PORT || 80;   // 👈 ahora prioriza el 80
+const PORT = process.env.PORT || 3000; // 👈 usa 3000, Nginx redirige desde 80
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Servidor corriendo en http://0.0.0.0:${PORT}`);
 });
+
 
