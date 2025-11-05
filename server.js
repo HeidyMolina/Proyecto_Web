@@ -8,7 +8,7 @@ const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const multer = require('multer');
 const path = require('path');
@@ -18,6 +18,7 @@ const juegosRouter = require('./routes/juegos');
 const db = require('./db');
 
 const app = express();
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
