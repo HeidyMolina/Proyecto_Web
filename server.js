@@ -1244,6 +1244,62 @@ app.get('/admin/agregarciudadano', (req, res) => {
 });
 });
 
+// =============================
+// AGREGAR COMENTARIO CIUDADANO
+// =============================
+app.post('/admin/agregarciudadano/agregar', uploadCiudadanos.single('foto'), (req, res) => {
+  const { nombre, ocupacion, descripcion } = req.body;
+  const foto = req.file ? '/uploads/ciudadanos/' + req.file.filename : null;
+
+  if (!nombre || !ocupacion || !descripcion) {
+    console.error('❌ Faltan campos al agregar comentario ciudadano');
+    return res.status(400).send('Faltan datos obligatorios.');
+  }
+
+  const sql = 'INSERT INTO comentariociudadanos (nombre, ocupacion, descripcion, foto) VALUES (?, ?, ?, ?)';
+  db.query(sql, [nombre, ocupacion, descripcion, foto], (err) => {
+    if (err) {
+      console.error('❌ Error al guardar comentario ciudadano:', err);
+      return res.status(500).send('Error al guardar comentario.');
+    }
+    req.session.agregado = true;
+    res.redirect('/admin/agregarciudadano');
+  });
+});
+
+
+// =============================
+// ELIMINAR COMENTARIO CIUDADANO
+// =============================
+app.post('/admin/agregarciudadano/eliminar/:id', (req, res) => {
+  const { id } = req.params;
+
+  db.query('SELECT foto FROM comentariociudadanos WHERE id = ?', [id], (err, rows) => {
+    if (err || rows.length === 0) {
+      console.error('❌ Error al obtener comentario ciudadano:', err);
+      return res.status(500).send('Error al eliminar comentario.');
+    }
+
+    const foto = rows[0].foto;
+    if (foto) {
+      const rutaFoto = path.join(__dirname, 'public', foto);
+      if (fs.existsSync(rutaFoto)) fs.unlinkSync(rutaFoto);
+    }
+
+    db.query('DELETE FROM comentariociudadanos WHERE id = ?', [id], (err2) => {
+      if (err2) {
+        console.error('❌ Error al eliminar comentario ciudadano:', err2);
+        return res.status(500).send('Error al eliminar comentario.');
+      }
+
+      req.session.eliminado = true;
+      res.redirect('/admin/agregarciudadano');
+    });
+  });
+});
+
+
+
 // =====================
 // BANDEJA DE MENSAJES (USUARIO)
 // =====================
@@ -1778,48 +1834,30 @@ app.post('/guardar-resultado', (req, res) => {
   });
 });
 
-
 // =====================
-// LISTA DE RESULTADOS (RANKING)
+// LISTA DE RESULTADOS (RANKING GENERAL)
 // =====================
 app.get('/admin/resultados', requireAdmin, (req, res) => {
   const sql = `
-    SELECT u.id, u.nombre, u.apellido, r.juego, r.puntaje, r.tiempo, r.fecha
-    FROM resultados r
+    SELECT 
+      u.id,
+      u.nombre,
+      u.apellido,
+      SUM(r.puntaje) AS total_puntaje,
+      SUM(r.tiempo_segundos) AS total_tiempo
+    FROM resultados_juegos r
     JOIN usuarios u ON r.usuario_id = u.id
-    ORDER BY u.id, r.fecha DESC
+    GROUP BY u.id, u.nombre, u.apellido
+    ORDER BY total_puntaje DESC, total_tiempo ASC;
   `;
-  db.query(sql, (err, rows) => {
+
+  db.query(sql, (err, ranking) => {
     if (err) {
-      console.error("Error obteniendo resultados:", err);
+      console.error("❌ Error obteniendo ranking:", err);
       return res.status(500).send("Error al cargar resultados.");
     }
 
-    // Agrupar por usuario
-    const usuariosMap = {};
-    rows.forEach(r => {
-      if (!usuariosMap[r.id]) {
-        usuariosMap[r.id] = {
-          id: r.id,
-          nombre: r.nombre,
-          apellido: r.apellido,
-          juegos: [],
-          total_puntaje: 0,
-          total_tiempo: 0
-        };
-      }
-      usuariosMap[r.id].juegos.push(r);
-      usuariosMap[r.id].total_puntaje += r.puntaje;
-      usuariosMap[r.id].total_tiempo += r.tiempo;
-    });
-
-    // Convertir a array y ordenar ranking
-    const ranking = Object.values(usuariosMap).sort((a, b) => {
-      if (b.total_puntaje === a.total_puntaje) {
-        return a.total_tiempo - b.total_tiempo; // desempate por tiempo
-      }
-      return b.total_puntaje - a.total_puntaje;
-    });
+    console.log("✅ Ranking generado:", ranking.length, "usuarios encontrados.");
 
     res.render('resultados', {
       title: 'Resultados',
@@ -1828,6 +1866,7 @@ app.get('/admin/resultados', requireAdmin, (req, res) => {
     });
   });
 });
+
 
 // ==========================
 // Función para contar visitas
